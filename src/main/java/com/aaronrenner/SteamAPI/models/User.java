@@ -1,5 +1,7 @@
 package com.aaronrenner.SteamAPI.models;
 
+import java.util.ArrayList;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -12,19 +14,17 @@ public class User {
 	private String SteamID64;
 	private String password;
 	private String role;
-	/**
-	 *  TODO: Add friends list and make it work below
-	 */
+	private ArrayList<FriendID> friendList;
 	
 	public User() {
 	}
 	
-	public void addFriend() {
-		
+	public boolean addFriend(FriendID friend_SteamID) {
+		return friendList.add(friend_SteamID);
 	}
 	
-	public void removeFriend() {
-		
+	public boolean removeFriend(FriendID friend_SteamID) {
+		return friendList.remove(friend_SteamID);
 	}
 	
 }

@@ -5,12 +5,12 @@ import lombok.ToString;
 
 @ToString(includeFieldNames=true)
 @Data
-public class Friend {
+public class FriendID {
 	
 	private long id;
 	private String SteamID64;
 	
-	public Friend() {
+	public FriendID() {
 	}
 	
 }
