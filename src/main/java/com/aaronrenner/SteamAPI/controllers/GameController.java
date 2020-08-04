@@ -5,6 +5,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.aaronrenner.SteamAPI.exceptions.GameNotFound;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.services.GameService;
 
@@ -12,20 +13,28 @@ import com.aaronrenner.SteamAPI.services.GameService;
 public class GameController {
 	
 	final private String GAMEURL = "/games";
-	final private String SELECTGAMEURL = "/{appID}";
+	final private String SELECTGAMEURL = GAMEURL + "/{appID}";
 	
 	@Autowired
 	private GameService gameService;
 
 	// Root Url
 	@GetMapping(GAMEURL)
-	public List getGameByName(@RequestParam(value = "title") String gameTitle) {
-		return this.gameService.getGameByTitle(gameTitle);
+	public List<Game> getGameList(@RequestParam(value = "title") Optional<String> gameTitle) {
+		if(gameTitle.isPresent()) {
+		 return this.gameService.getGameByTitle(gameTitle.get());
+		}
+		
+		return this.gameService.getGameList();
 	}
 	
-	@GetMapping(GAMEURL)
-	public Game getGameByID(@RequestParam(value = "appID") long gameAppID) {
-		return this.gameService.getGameByID(gameAppID);
+	@GetMapping(SELECTGAMEURL)
+	public Game getGameByID(@PathVariable long appID) {
+		Game gameSearch = this.gameService.getGameByID(appID);
+		if(gameSearch == null) {
+			throw new GameNotFound(appID);
+		}
+		return gameSearch;
 	}
 	
 	@PostMapping(GAMEURL)
@@ -33,10 +42,12 @@ public class GameController {
 		return this.gameService.createGame(gameEntry);
 	}
 	
-	// TODO Edit OAS if I keep delete like this
 	@DeleteMapping(SELECTGAMEURL)
-	public boolean deleteGame(@PathVariable long gameAppID) {
-		return this.gameService.deleteGame(gameAppID);
+	public void deleteGame(@PathVariable long appID) {
+		boolean action = this.gameService.deleteGame(appID);
+		if(!action) {
+			throw new GameNotFound(appID);
+		}
 	}
 	
 }

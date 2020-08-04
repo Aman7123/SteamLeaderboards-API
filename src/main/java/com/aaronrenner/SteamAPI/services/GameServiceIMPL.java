@@ -2,9 +2,10 @@ package com.aaronrenner.SteamAPI.services;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.springframework.stereotype.Service;
 import com.aaronrenner.SteamAPI.models.Game;
 
+@Service
 public class GameServiceIMPL implements GameService {
 	
 	private List<Game> gameList;
@@ -13,6 +14,11 @@ public class GameServiceIMPL implements GameService {
 		this.gameList = new ArrayList<>();
 	}
 
+	@Override
+	public List<Game> getGameList() {
+		return gameList;
+	}
+	
 	@Override
 	public List<Game> getGameByTitle(String gameTitle) {
 		
