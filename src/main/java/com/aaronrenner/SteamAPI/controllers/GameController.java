@@ -9,32 +9,34 @@ import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.services.GameService;
 
 @RestController
-@RequestMapping("/games")
 public class GameController {
+	
+	final private String GAMEURL = "/games";
+	final private String SELECTGAMEURL = "/{appID}";
 	
 	@Autowired
 	private GameService gameService;
 
 	// Root Url
-	@PostMapping("")
+	@GetMapping(GAMEURL)
+	public List getGameByName(@RequestParam(value = "title") String gameTitle) {
+		return this.gameService.getGameByTitle(gameTitle);
+	}
+	
+	@GetMapping(GAMEURL)
+	public Game getGameByID(@RequestParam(value = "appID") long gameAppID) {
+		return this.gameService.getGameByID(gameAppID);
+	}
+	
+	@PostMapping(GAMEURL)
 	public Game createGame(@RequestBody Game gameEntry) {	
 		return this.gameService.createGame(gameEntry);
 	}
 	
 	// TODO Edit OAS if I keep delete like this
-	@DeleteMapping("/{appID}")
-	public void deleteGame(@PathVariable long gameAppID) {
-		this.gameService.deleteGame(gameAppID);
-	}
-	
-	@GetMapping("")
-	public List getGameByName(@RequestParam(value = "title") String gameTitle) {
-		return this.gameService.getGameByTitle(gameTitle);
-	}
-	
-	@GetMapping("")
-	public Game getGameByID(@RequestParam(value = "appID") long gameAppID) {
-		return this.gameService.getGameByID(gameAppID);
+	@DeleteMapping(SELECTGAMEURL)
+	public boolean deleteGame(@PathVariable long gameAppID) {
+		return this.gameService.deleteGame(gameAppID);
 	}
 	
 }

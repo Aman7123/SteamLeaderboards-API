@@ -1,33 +1,63 @@
 package com.aaronrenner.SteamAPI.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.aaronrenner.SteamAPI.models.Game;
 
 public class GameServiceIMPL implements GameService {
+	
+	private List<Game> gameList;
+	
+	public GameServiceIMPL() {
+		this.gameList = new ArrayList<>();
+	}
 
 	@Override
-	public List getGameByTitle(String gameTitle) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Game> getGameByTitle(String gameTitle) {
+		
+		List<Game> bufferList = new ArrayList<>();
+		
+		for(Game newGame: gameList) {
+			if(newGame.getTitle().equalsIgnoreCase(gameTitle)) {
+				bufferList.add(newGame);
+			}
+		}
+		
+		return bufferList;
 	}
 
 	@Override
 	public Game getGameByID(long GameAppID) {
-		// TODO Auto-generated method stub
+		
+		for(Game newGame: gameList) {
+			if(newGame.getId() == GameAppID) {
+				return newGame;
+			}
+		}
+		
 		return null;
 	}
 
 	@Override
 	public Game createGame(Game newGame) {
-		// TODO Auto-generated method stub
+		//Test if it exists
+		if(gameList.contains(newGame)) {
+		} else {
+			gameList.add(newGame);
+			return newGame;
+		}
 		return null;
 	}
 
 	@Override
-	public void deleteGame(long GameAppID) {
-		// TODO Auto-generated method stub
-
+	public boolean deleteGame(long GameAppID) {
+		for(Game newGame: gameList) {
+			if(newGame.getId() == GameAppID) {
+				return gameList.remove(newGame);
+			}
+		}
+		return false;
 	}
 
 }

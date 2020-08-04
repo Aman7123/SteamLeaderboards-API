@@ -17,6 +17,7 @@ public class User {
 	private ArrayList<FriendID> friendList;
 	
 	public User() {
+		friendList = new ArrayList<>();
 	}
 	
 	public boolean addFriend(FriendID friend_SteamID) {
