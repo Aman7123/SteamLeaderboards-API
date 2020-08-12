@@ -1,23 +1,19 @@
 package com.aaronrenner.SteamAPI.models;
 
 import java.util.ArrayList;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Data;
 import lombok.ToString;
 
 @ToString(includeFieldNames=true)
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class SteamUserGameInfo {
-
-	private String steamID;
+public class SteamUserAchievementInfo {
+	
+	private String SteamID64;
 	private String gameName;
-	private ArrayList<SteamStatLayout> stats;
 	private ArrayList<SteamAchievementLayout> achievements;
 	
-	public SteamUserGameInfo() {
-		stats = new ArrayList<>();
+	public SteamUserAchievementInfo() {
 		achievements = new ArrayList<>();
 	}
+
 }

@@ -11,7 +11,7 @@ public class User {
 
 	private long id;
 	private String username;
-	private String SteamID64;
+	private String steamID64;
 	private String password;
 	private String role;
 	private ArrayList<FriendID> friendList;
@@ -20,12 +20,12 @@ public class User {
 		friendList = new ArrayList<>();
 	}
 	
-	public boolean addFriend(FriendID friend_SteamID) {
-		return friendList.add(friend_SteamID);
+	public boolean addFriend(FriendID friend) {
+		return friendList.add(friend);
 	}
 	
-	public boolean removeFriend(FriendID friend_SteamID) {
-		return friendList.remove(friend_SteamID);
+	public boolean removeFriend(FriendID friend) {
+		return friendList.remove(friend);
 	}
 	
 }

@@ -41,7 +41,6 @@ public class GameServiceIMPL implements GameService {
 				return newGame;
 			}
 		}
-		
 		return null;
 	}
 
