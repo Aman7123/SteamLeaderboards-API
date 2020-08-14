@@ -4,13 +4,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.aaronrenner.SteamAPI.models.FriendID;
+import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.SteamUserAchievementInfo;
 import com.aaronrenner.SteamAPI.models.SteamUserGameInfo;
 import com.aaronrenner.SteamAPI.models.SteamUserProfileInfo;
 import com.aaronrenner.SteamAPI.models.SteamUserStatInfo;
+import com.aaronrenner.SteamAPI.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -22,15 +26,19 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	
 	private String steamProfileEndpoint = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?";
 	private String steamGameStatsEndpoint = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?";
+	private String steamGameInfoEndpoint = "http://http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?";
 	private String steamKey = "E7F6470D0BAFE99CED3362CB2DB5F25B";
 	// String cbizz = "76561198440364879";
+	
+	@Autowired
+	private UserService userService;
 
 	@Override
 	public List<SteamUserProfileInfo> getSteamProfile(String SteamID64) {
-		List<SteamUserProfileInfo> profile = new ArrayList<>();
+		List<String> friendsList = getUserFriends(SteamID64);
 		
+		List<SteamUserProfileInfo> profile = new ArrayList<>();
 		RestTemplate restTemplate = new RestTemplate();
-		// TODO Add functionality for friends search
 		String steamSearchURL = steamProfileEndpoint + "key=" + steamKey + "&steamids=" + SteamID64;
 		
 		URI steamURI = null;
@@ -117,6 +125,21 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 			e.printStackTrace();
 		}
 		return jsonData;
+	}
+	
+	private List<String> getUserFriends(String SteamID64) {
+		User activeUser = userService.getUser(SteamID64);
+		List<String> friendsList = new ArrayList<>();
+		
+		if(activeUser != null) {
+			List<FriendID> userFriends = activeUser.getFriendList();
+			for(FriendID friendLoop: userFriends) {
+				friendsList.add(friendLoop.getSteamID64());
+			}
+		}
+		
+		return friendsList;
+		
 	}
 
 }

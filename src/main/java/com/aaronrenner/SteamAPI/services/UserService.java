@@ -1,7 +1,6 @@
 package com.aaronrenner.SteamAPI.services;
 
-import java.util.List;
-
+import java.util.*;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
 
@@ -11,9 +10,9 @@ public interface UserService {
 	User createUser(User newUser);
 	User getUser(String steamID64);
 	User updateUser(String steamID64, User updateUser);
-	boolean deleteUser(String steamID64);
+	void deleteUser(String steamID64);
 	List<FriendID> getFriend(String steamID64);
 	FriendID createFriend(String steamID64, String friendSteamID64);
-	boolean deleteFriend(String steamID64, String friendSteamID64);
+	void deleteFriend(String steamID64, String friendSteamID64);
 	
 }

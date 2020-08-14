@@ -1,11 +1,9 @@
 package com.aaronrenner.SteamAPI.controllers;
 
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import com.aaronrenner.SteamAPI.exceptions.GameNotFound;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.services.GameService;
 
@@ -29,25 +27,19 @@ public class GameController {
 	}
 	
 	@GetMapping(SELECTGAMEURL)
-	public Game getGameByID(@PathVariable long appID) {
-		Game gameSearch = this.gameService.getGameByID(appID);
-		if(gameSearch == null) {
-			throw new GameNotFound(appID);
-		}
-		return gameSearch;
+	public Optional<Game> getGameByID(@PathVariable long appID) {
+		return this.gameService.getGameByID(appID);
 	}
 	
 	@PostMapping(GAMEURL)
-	public Game createGame(@RequestBody Game gameEntry) {	
-		return this.gameService.createGame(gameEntry);
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public void createGame(@RequestBody Game gameEntry) {	
+		this.gameService.createGame(gameEntry);
 	}
 	
 	@DeleteMapping(SELECTGAMEURL)
 	public void deleteGame(@PathVariable long appID) {
-		boolean action = this.gameService.deleteGame(appID);
-		if(!action) {
-			throw new GameNotFound(appID);
-		}
+		this.gameService.deleteGame(appID);
 	}
 	
 }

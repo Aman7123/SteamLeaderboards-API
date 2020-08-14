@@ -1,101 +1,92 @@
 package com.aaronrenner.SteamAPI.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.aaronrenner.SteamAPI.exceptions.UserExists;
+import com.aaronrenner.SteamAPI.exceptions.UserNotFound;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
+import com.aaronrenner.SteamAPI.repositories.FriendRepository;
+import com.aaronrenner.SteamAPI.repositories.UserRepository;
 
 @Service
 public class UserServiceIMPL implements UserService {
 
-	private ArrayList<User> userList;
+	@Autowired
+	UserRepository userRepository;
 	
-	public UserServiceIMPL() {
-		this.userList = new ArrayList<>();
-	}
+	@Autowired
+	FriendRepository friendRepository;
+	
 	
 	@Override
 	public List<User> getUserList() {
-		return this.userList;
+		return userRepository.findAll();
 	}
 
 	@Override
 	public User createUser(User newUser) {
-		if(userList.contains(newUser)) {
+		User checkUser = userRepository.findBySteamID64(newUser.getSteamID64());
+		if(checkUser != null) {
+			throw new UserExists(newUser.getSteamID64());
 		} else {
-			userList.add(newUser);
-			return newUser;
+			userRepository.save(newUser);
+			return userRepository.findBySteamID64(newUser.getSteamID64());
 		}
-		return null;
 	}
 
 	@Override
 	public User getUser(String steamID64) {
-		for(User userSearch: userList) {
-			if(userSearch.getSteamID64().equals(steamID64)) {
-				return userSearch;
-			}
+		User userSearch = userRepository.findBySteamID64(steamID64);
+		if( userSearch != null) {
+			return userSearch;
+		} else {
+			throw new UserNotFound(steamID64);
 		}
-		return null;
 	}
 
 	@Override
 	public User updateUser(String steamID64, User updateUser) {
-		for(User userSearch: userList) {
-			if(userSearch.getSteamID64().equals(steamID64)) {
-				System.out.println(updateUser);
-			}
-		}
+		// TODO learn patch
 		return null;
 	}
 
 	@Override
-	public boolean deleteUser(String steamID64) {
-		for(User userSearch: userList) {
-			if(userSearch.getSteamID64().equals(steamID64)) {
-				return userList.remove(userSearch);
-			}
-		}
-		return false;
+	public void deleteUser(String steamID64) {
+		User userSearch = getUser(steamID64);
+		
+		userRepository.delete(userSearch);
 	}
 
 	@Override
 	public List<FriendID> getFriend(String steamID64) {
-		List<FriendID> bufferFriends = null;
-		for(User userSearch: userList) {
-			if(userSearch.getSteamID64().equals(steamID64)) {
-				return userSearch.getFriendList();
-			}
-		}
-		return bufferFriends;
+		User userSearch = getUser(steamID64);
+			
+		return userSearch.getFriendList();
 	}
 
 	@Override
 	public FriendID createFriend(String steamID64, String friendSteamID64) {
-		for(User userSearch: userList) {
-			if(userSearch.getSteamID64().equals(steamID64)) {
-				FriendID newFriend = new FriendID(userSearch.getId());
-				newFriend.setSteamID64(friendSteamID64);
-				userSearch.addFriend(newFriend);
-				return newFriend;
-			}
-		}
+		/** TODO
+		User userSearch = getUser(steamID64);
+		
+		FriendID newFriend = new FriendID(userSearch);
+		newFriend.setSteamID64(friendSteamID64);
+		friendRepository.save(newFriend);
+		return newFriend;
+		*/
 		return null;
 	}
 
 	@Override
-	public boolean deleteFriend(String steamID64, String friendSteamID64) {
-		for(User userSearch: userList) {
-			if(userSearch.getSteamID64().equals(steamID64)) { //end check user
-				for(FriendID friendSearch : userSearch.getFriendList()) {
-					if(friendSearch.getSteamID64().equals(friendSteamID64)) { //end check friend
-						return userSearch.getFriendList().remove(friendSearch);
-					}
-				}
-			}
-		}
-		return false;
+	public void deleteFriend(String steamID64, String friendSteamID64) {
+		/** TODO
+		User userSearch = getUser(steamID64);
+		
+		friendRepository.deleteBySteamID64(friendSteamID64);
+		*/
 	}
 
 }

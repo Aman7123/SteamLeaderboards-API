@@ -1,68 +1,57 @@
 package com.aaronrenner.SteamAPI.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.aaronrenner.SteamAPI.exceptions.GameExists;
+import com.aaronrenner.SteamAPI.exceptions.GameNotFound;
 import com.aaronrenner.SteamAPI.models.Game;
+import com.aaronrenner.SteamAPI.repositories.GameRepository;
 
 @Service
 public class GameServiceIMPL implements GameService {
 	
-	private List<Game> gameList;
-	
-	public GameServiceIMPL() {
-		this.gameList = new ArrayList<>();
-	}
+	@Autowired
+	GameRepository gameRepository;
 
 	@Override
 	public List<Game> getGameList() {
-		return gameList;
+		return gameRepository.findAll();
 	}
 	
 	@Override
 	public List<Game> getGameByTitle(String gameTitle) {
-		
-		List<Game> bufferList = new ArrayList<>();
-		
-		for(Game newGame: gameList) {
-			if(newGame.getTitle().equalsIgnoreCase(gameTitle)) {
-				bufferList.add(newGame);
-			}
-		}
-		
-		return bufferList;
+		return gameRepository.findByTitleIgnoreCase(gameTitle);
 	}
 
 	@Override
-	public Game getGameByID(long GameAppID) {
-		
-		for(Game newGame: gameList) {
-			if(newGame.getId() == GameAppID) {
-				return newGame;
-			}
+	public Optional<Game> getGameByID(long GameAppID) {
+		Optional<Game> findAGame= gameRepository.findById(GameAppID);
+		if(findAGame.isPresent()) {
+			return findAGame;
+		} else {
+			throw new GameNotFound(GameAppID);
 		}
-		return null;
 	}
 
 	@Override
 	public Game createGame(Game newGame) {
-		//Test if it exists
-		if(gameList.contains(newGame)) {
+		Optional<Game> checkGame = gameRepository.findById(newGame.getId());
+		if(!checkGame.isPresent()) {
+			return gameRepository.save(newGame);
 		} else {
-			gameList.add(newGame);
-			return newGame;
+			throw new GameExists(newGame.getId());
 		}
-		return null;
 	}
 
 	@Override
-	public boolean deleteGame(long GameAppID) {
-		for(Game newGame: gameList) {
-			if(newGame.getId() == GameAppID) {
-				return gameList.remove(newGame);
-			}
+	public void deleteGame(long GameAppID) {
+		Optional<Game> checkGame = gameRepository.findById(GameAppID);
+		if(!checkGame.isPresent()) {
+			gameRepository.deleteById(GameAppID);
+		} else {
+			throw new GameNotFound(GameAppID);
 		}
-		return false;
 	}
 
 }

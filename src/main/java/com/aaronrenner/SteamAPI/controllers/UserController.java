@@ -1,7 +1,8 @@
 package com.aaronrenner.SteamAPI.controllers;
 
-import java.util.List;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
@@ -21,20 +22,18 @@ public class UserController {
 	// Root URL
 	@GetMapping(BASEURL)
 	public List<User> getUserList() {
-		// TODO add catches
 		return this.userService.getUserList();
 	}
 	
 	@PostMapping(BASEURL)
-	public User createUser(@RequestBody User newUser) {
-		// TODO add catches
-		return this.userService.createUser(newUser);	
+	@ResponseStatus(value= HttpStatus.CREATED)
+	public void createUser(@RequestBody User newUser) {
+		this.userService.createUser(newUser);	
 	}
 	
 	// USER SPECIFIC ENDPOINT
 	@GetMapping(SELECTUSERURL)
 	public User getUser(@PathVariable String steamID64) {
-		// TODO add catches
 		return this.userService.getUser(steamID64);
 	}
 	
@@ -46,27 +45,24 @@ public class UserController {
 	*/
 	
 	@DeleteMapping(SELECTUSERURL)
-	public boolean deleteUser(@PathVariable String steamID64) {
-		// TODO add catches
-		return this.userService.deleteUser(steamID64);
+	public void deleteUser(@PathVariable String steamID64) {
+		this.userService.deleteUser(steamID64);
 	}
 	
 	// USER FRIENDS LIST COMMANDS
 	@GetMapping(FRIENDBASEURL)
 	public List<FriendID> getFriend(@PathVariable String steamID64) {
-		// TODO add catches
 		return this.userService.getFriend(steamID64);
 	}
 	
 	@PostMapping(SELECTUSERFRIENDURL)
-	public FriendID createFriend(@PathVariable String steamID64, @PathVariable String friendSteamID64) {
-		// TODO add catches
-		return this.userService.createFriend(steamID64, friendSteamID64);
+	@ResponseStatus(value= HttpStatus.CREATED)
+	public void createFriend(@PathVariable String steamID64, @PathVariable String friendSteamID64) {
+		this.userService.createFriend(steamID64, friendSteamID64);
 	}
 	
 	@DeleteMapping(SELECTUSERFRIENDURL)
-	public boolean deleteFriend(@PathVariable String steamID64, @PathVariable String friendSteamID64) {
-		// TODO add catches
-		return this.userService.deleteFriend(steamID64, friendSteamID64);
+	public void deleteFriend(@PathVariable String steamID64, @PathVariable String friendSteamID64) {
+		this.userService.deleteFriend(steamID64, friendSteamID64);
 	}
 }
