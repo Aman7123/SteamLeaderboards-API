@@ -9,14 +9,14 @@ import lombok.ToString;
 @ToString(includeFieldNames=true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SteamUserGameInfo {
+public class SteamGameInfo {
 
 	private String steamID;
 	private String gameName;
 	private ArrayList<SteamStatLayout> stats;
 	private ArrayList<SteamAchievementLayout> achievements;
 	
-	public SteamUserGameInfo() {
+	public SteamGameInfo() {
 		stats = new ArrayList<>();
 		achievements = new ArrayList<>();
 	}

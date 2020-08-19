@@ -1,9 +1,6 @@
 package com.aaronrenner.SteamAPI.models;
 
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Data;
 import lombok.ToString;
 
@@ -15,15 +12,14 @@ public class FriendID {
 	
 	@Id
 	private long id;
-	private String steamID64;
-	
 	@ManyToOne
 	@JoinColumn(name="userId")
-	@JsonIgnore
 	private User user;
+	private String steamID64;
 
 	public FriendID(User user) {
-		this.user=user;
+		this.user = user;
+
 	}
 	
 }

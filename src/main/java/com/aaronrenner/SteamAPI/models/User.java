@@ -18,7 +18,7 @@ public class User {
 	private String password;
 	private String role;
 	
-	@OneToMany(mappedBy="user", fetch = FetchType.LAZY)
-	private List<FriendID> friendList = new ArrayList<FriendID>(0);
+	@OneToMany(mappedBy="user")
+	private List<FriendID> friendList = new ArrayList<>(0);
 	
 }
