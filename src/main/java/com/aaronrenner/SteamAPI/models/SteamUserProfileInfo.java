@@ -8,6 +8,7 @@ import lombok.ToString;
 @ToString(includeFieldNames=true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class SteamUserProfileInfo {
 
 	private String steamid;

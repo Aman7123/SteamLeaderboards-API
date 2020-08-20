@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.aaronrenner.SteamAPI.models.SteamProfile;
 import com.aaronrenner.SteamAPI.models.SteamUserAchievementInfo;
-import com.aaronrenner.SteamAPI.models.SteamUserProfileInfo;
 import com.aaronrenner.SteamAPI.models.SteamUserStatInfo;
 import com.aaronrenner.SteamAPI.services.LeaderboardService;
 
@@ -23,7 +23,7 @@ public class LeaderboardController {
 	
 	// Root commands
 	@GetMapping(PROFILEURL)
-	public List<SteamUserProfileInfo> getProfile(@PathVariable String steamID64) {
+	public List<SteamProfile> getProfile(@PathVariable String steamID64) {
 		return this.leaderboardService.getSteamProfile(steamID64);
 	}
 	
