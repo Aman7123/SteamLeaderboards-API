@@ -45,15 +45,14 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	@Override
 	public List<SteamUserProfileInfo> getSteamProfile(String SteamID64) {
 		// TODO List<String> friendsList = getUserFriends(SteamID64); fix friends search
-		
 		List<SteamUserProfileInfo> profile = new ArrayList<>();
 
 		String steamSearchURL = this.steamProfileEndpoint + "key=" + steamKey + "&steamids=" + SteamID64;
 		JSONObject getRequest = getRequest(steamSearchURL);
 		JSONObject responseData = (JSONObject) getRequest.get("response");
 		JSONArray playerData = (JSONArray) responseData.get("players");
-
 		int arraySize = playerData.size();
+		// Loop player search
 		for(int x=0; x<arraySize; x++) {
 			try {
 				SteamUserProfileInfo newEntry = objectMapper.readValue(playerData.get(x).toString(), SteamUserProfileInfo.class);
@@ -67,11 +66,19 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				int recentlyPlayedListSize = recentlyPlayedGameList.size();
 				// TODO loop owned games list for info
 				int ownedGamesListSize = ownedGamesList.size();
+				
+				// Loop recent games
+				/** These methods need to be redesigned for speed these loops are outrageous
 				for(int i=0; i<recentlyPlayedListSize; i++) {
 					SteamProfileGameInfo newGameEntry = objectMapper.readValue(recentlyPlayedGameList.get(i).toString(), SteamProfileGameInfo.class);
-					// TODO add game creation behind the scenes
-					System.out.println(newGameEntry);
+					saveGame(String.valueOf(newGameEntry.getAppid()));
 				}
+				for(int t=0; t<ownedGamesListSize; t++) {
+					SteamProfileGameInfo newGameEntry = objectMapper.readValue(ownedGamesList.get(t).toString(), SteamProfileGameInfo.class);
+					saveGame(String.valueOf(newGameEntry.getAppid()));
+				}
+				*/
+				
 				profile.add(newEntry);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -168,35 +175,25 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	}
 	
 	/**
-	 * This is a helper method, this method looks up a games data from Steam's API and will create a new Game object for us from that data.
-	 * @param appID A string containing a game's id #
-	 * @return A Game object of the searched game
-	 */
-	private Game lookupGame(String appID) {
-		String steamGameInfo = this.steamGameInfoEndpoint + "key=" + steamKey + "&appid=" + appID;
-
-		JSONObject getRequest = getRequest(steamGameInfo);
-		JSONObject gameData = (JSONObject) getRequest.get("game");
-		
-		String gameName = gameData.getAsString("gameName");
-		
-		Game newGame = new Game();
-		newGame.setId(Long.parseLong(appID));
-		newGame.setTitle(gameName);
-
-		return newGame;
-	}
-	
-	/**
 	 * This method will test our DB for a game, if it does not exist we create and save a new game.
 	 * @param appID The games id # in Steams systems
 	 */
 	private void saveGame(String appID) {
 		long game_appID = Long.parseLong(appID);
-		Optional<Game> newGame = gameRepository.findById(game_appID);
+		Optional<Game> gameSearch = gameRepository.findById(game_appID);
 		
-		if(!newGame.isPresent()) {
-			gameRepository.save(lookupGame(appID));
+		if(gameSearch.isPresent()) {
+			String steamGameInfo = this.steamGameInfoEndpoint + "key=" + steamKey + "&appid=" + appID;
+
+			JSONObject getRequest = getRequest(steamGameInfo);
+			JSONObject gameData = (JSONObject) getRequest.get("game");
+			
+			String gameName = gameData.getAsString("gameName");
+			
+			Game newGame = new Game();
+			newGame.setId(Long.parseLong(appID));
+			newGame.setTitle(gameName);
+			gameRepository.save(newGame);
 		}
 	}
 	
