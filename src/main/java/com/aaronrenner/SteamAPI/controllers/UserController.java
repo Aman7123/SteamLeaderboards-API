@@ -3,7 +3,10 @@ package com.aaronrenner.SteamAPI.controllers;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.aaronrenner.SteamAPI.exceptions.UserExists;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.services.UserService;
@@ -26,9 +29,9 @@ public class UserController {
 	}
 	
 	@PostMapping(BASEURL)
-	@ResponseStatus(value= HttpStatus.CREATED)
+	//@ResponseStatus(value= HttpStatus.CREATED)
 	public void createUser(@RequestBody User newUser) {
-		this.userService.createUser(newUser);	
+		this.userService.createUser(newUser);
 	}
 	
 	// USER SPECIFIC ENDPOINT
@@ -37,12 +40,11 @@ public class UserController {
 		return this.userService.getUser(steamID64);
 	}
 	
-	/**
 	@PatchMapping(SELECTUSERURL)
-	public User updateUser() {
-		TODO Create this patch properly
+	@ResponseStatus(value= HttpStatus.ACCEPTED)
+	public User updateUser(@PathVariable String steamID64, @RequestBody User userModel) {
+		return this.userService.updateUser(steamID64, userModel);
 	}
-	*/
 	
 	@DeleteMapping(SELECTUSERURL)
 	public void deleteUser(@PathVariable String steamID64) {

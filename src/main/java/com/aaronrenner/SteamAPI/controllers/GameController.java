@@ -31,6 +31,12 @@ public class GameController {
 		return this.gameService.getGameByID(appID);
 	}
 	
+	@PatchMapping(SELECTGAMEURL)
+	@ResponseStatus(value= HttpStatus.ACCEPTED)
+	public void updateGame(@PathVariable long appID, @RequestBody Game gameModel) {
+		this.gameService.updateGame(appID, gameModel);
+	}
+	
 	@PostMapping(GAMEURL)
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public void createGame(@RequestBody Game gameEntry) {	

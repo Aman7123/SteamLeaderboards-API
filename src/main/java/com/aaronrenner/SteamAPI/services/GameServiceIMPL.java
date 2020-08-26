@@ -33,6 +33,15 @@ public class GameServiceIMPL implements GameService {
 			throw new GameNotFound(GameAppID);
 		}
 	}
+	
+	@Override
+	public Game updateGame(long appID, Game updateGame) {
+		Game storedGameModel = getGameByID(appID).get();
+		if(updateGame.getTitle() != null) {
+			storedGameModel.setTitle(updateGame.getTitle());
+		}
+		return this.gameRepository.save(storedGameModel);
+	}
 
 	@Override
 	public Game createGame(Game newGame) {

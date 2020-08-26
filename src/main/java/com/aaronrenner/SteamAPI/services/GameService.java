@@ -10,6 +10,7 @@ public interface GameService {
 	List<Game> getGameList();
 	List<Game> getGameByTitle(String gameTitle);
 	Optional<Game> getGameByID(long GameAppID);
+	Game updateGame(long appID, Game updateGame);
 	Game createGame(Game newGame);
 	void deleteGame(long GameAppID);
 	

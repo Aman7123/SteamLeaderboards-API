@@ -4,6 +4,8 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aaronrenner.SteamAPI.exceptions.FriendExists;
+import com.aaronrenner.SteamAPI.exceptions.FriendNotFound;
 import com.aaronrenner.SteamAPI.exceptions.UserExists;
 import com.aaronrenner.SteamAPI.exceptions.UserNotFound;
 import com.aaronrenner.SteamAPI.models.FriendID;
@@ -40,7 +42,7 @@ public class UserServiceIMPL implements UserService {
 	@Override
 	public User getUser(String steamID64) {
 		User userSearch = userRepository.findBySteamID64(steamID64);
-		if( userSearch != null) {
+		if(userSearch != null) {
 			return userSearch;
 		} else {
 			throw new UserNotFound(steamID64);
@@ -49,44 +51,78 @@ public class UserServiceIMPL implements UserService {
 
 	@Override
 	public User updateUser(String steamID64, User updateUser) {
-		// TODO learn patch
-		return null;
+		User storedUserModel = getUser(steamID64);
+		if(updateUser.getSteamID64() != null) {
+			storedUserModel.setSteamID64(updateUser.getSteamID64());
+		} if(updateUser.getUsername() != null) {
+			storedUserModel.setUsername(updateUser.getUsername());
+		} if(updateUser.getPassword() != null) {
+			storedUserModel.setPassword(updateUser.getPassword());
+		}
+		return this.userRepository.save(storedUserModel);
 	}
 
 	@Override
 	public void deleteUser(String steamID64) {
+		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
-		
-		userRepository.delete(userSearch);
+
+		this.userRepository.delete(userSearch);			
+
+
 	}
 
 	@Override
 	public List<FriendID> getFriend(String steamID64) {
+		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
-			
+		
 		return userSearch.getFriendList();
+
 	}
 
 	@Override
 	public FriendID createFriend(String steamID64, String friendSteamID64) {
-		/** TODO
+		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
-		
-		FriendID newFriend = new FriendID(userSearch);
+
+		FriendID newFriend = new FriendID();
 		newFriend.setSteamID64(friendSteamID64);
-		friendRepository.save(newFriend);
+		
+		//Check before continuing
+		for(FriendID fID : userSearch.getFriendList()) {
+			if(fID.getSteamID64().equals(friendSteamID64)) {
+				throw new FriendExists(steamID64, friendSteamID64); // Will not precede if fails
+			}
+		}
+
+		newFriend = friendRepository.save(newFriend);
+		userSearch.getFriendList().add(newFriend);
+		userRepository.save(userSearch);
 		return newFriend;
-		*/
-		return null;
 	}
 
 	@Override
 	public void deleteFriend(String steamID64, String friendSteamID64) {
-		/** TODO
+		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
+		boolean friendExist = false;
+		FriendID userFriend = null;
 		
-		friendRepository.deleteBySteamID64(friendSteamID64);
-		*/
+		for(FriendID fID : userSearch.getFriendList()) {
+			if(fID.getSteamID64().equals(friendSteamID64)) {
+				friendExist = true;
+				userFriend = fID;
+				
+			}
+		}
+		if(friendExist) {
+			userSearch.getFriendList().remove(userFriend);
+			friendRepository.delete(userFriend);
+		} else {
+			throw new FriendNotFound(steamID64, friendSteamID64);
+		}
+		
 	}
 
 }

@@ -11,7 +11,6 @@ import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.SteamProfile;
 import com.aaronrenner.SteamAPI.models.SteamUserAchievementInfo;
 import com.aaronrenner.SteamAPI.models.SteamGameInfo;
-import com.aaronrenner.SteamAPI.models.SteamUserProfileInfo;
 import com.aaronrenner.SteamAPI.models.SteamUserStatInfo;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
@@ -78,6 +77,13 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				JSONArray ownedGamesList = (JSONArray) ownedGames.get("games");
 				int recentlyPlayedListSize = recentlyPlayedGameList.size();
 				int ownedGamesListSize = ownedGamesList.size();
+				
+				/** This is faster if I do not re-lookup the game
+				for(int t=0; t<ownedGamesListSize; t++) {
+					SteamProfileGameInfo newGameEntry = objectMapper.readValue(ownedGamesList.get(t).toString(), SteamProfileGameInfo.class);
+					System.out.println(newGameEntry.getName());
+				}
+				*/
 				
 				// Loop recent games
 				/** These methods need to be redesigned for speed these loops are outrageous
@@ -223,6 +229,9 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	
 	private JSONObject getSteamEndpoint(String endpoint, String steamID64) {
 		String steamEndpoint = endpoint + "&steamid=" + steamID64;
+		if(endpoint.equals(steamOwnedGamesEndpoint)) {
+			steamEndpoint = steamEndpoint + "&include_appinfo=true";
+		}
 		// Fetch data from URL
 		JSONObject getRequest = getRequest(steamEndpoint);
 		return (JSONObject) getRequest.get("response");	
