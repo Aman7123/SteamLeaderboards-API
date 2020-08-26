@@ -44,10 +44,14 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 
 	@Override
 	public List<SteamProfile> getSteamProfile(String SteamID64) {
-		// TODO List<String> friendsList = getUserFriends(SteamID64); fix friends search
+		List<FriendID> userFriendList = userService.getFriend(SteamID64);
+		String friendIDList = "";
+		for(FriendID friendEntry : userFriendList) {
+			friendIDList = friendIDList + "," + friendEntry.getSteamID64();
+		}
 		List<SteamProfile> profile = new ArrayList<>();
 		
-		String steamSearchURL = this.steamProfileEndpoint + "&steamids=" + SteamID64;
+		String steamSearchURL = this.steamProfileEndpoint + "&steamids=" + SteamID64 + friendIDList;
 		JSONObject getRequest = getRequest(steamSearchURL);
 		JSONObject responseData = (JSONObject) getRequest.get("response");
 		JSONArray playerData = (JSONArray) responseData.get("players");
@@ -56,10 +60,10 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		for(int x=0; x<arraySize; x++) {
 			try {
 				SteamProfile userProfile = objectMapper.readValue(playerData.get(x).toString(), SteamProfile.class);
-				JSONObject recentGames = getSteamEndpoint(this.steamRecentlyPlayedEndpoint, SteamID64);
-				JSONObject ownedGames = getSteamEndpoint(this.steamOwnedGamesEndpoint, SteamID64);
-				JSONObject profileLevel = getSteamEndpoint(this.steamProfileLevelEndpoint, SteamID64);
-				JSONArray badgeList = (JSONArray) getSteamEndpoint(this.steamProfileBadgeEndpoint, SteamID64).get("badges");
+				JSONObject recentGames = getSteamEndpoint(this.steamRecentlyPlayedEndpoint, userProfile.getSteamid());
+				JSONObject ownedGames = getSteamEndpoint(this.steamOwnedGamesEndpoint, userProfile.getSteamid());
+				JSONObject profileLevel = getSteamEndpoint(this.steamProfileLevelEndpoint, userProfile.getSteamid());
+				JSONArray badgeList = (JSONArray) getSteamEndpoint(this.steamProfileBadgeEndpoint, userProfile.getSteamid()).get("badges");
 				// Before diving into the "games" array (below) we must gather data from the parent object
 				long recentlyPlayedCount = (long) recentGames.getAsNumber("total_count");
 				userProfile.setRecentlyPlayed_Count(recentlyPlayedCount);
