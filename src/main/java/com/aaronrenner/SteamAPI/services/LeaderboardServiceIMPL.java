@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.SteamProfile;
+import com.aaronrenner.SteamAPI.models.SteamProfileGameInfo;
 import com.aaronrenner.SteamAPI.models.SteamUserAchievementInfo;
 import com.aaronrenner.SteamAPI.models.SteamGameInfo;
 import com.aaronrenner.SteamAPI.models.SteamGlobalAchievementLayout;
@@ -85,29 +86,32 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				userProfile.setBadge_Count(badgeCount);
 
 				// TODO Create sort and log for games in profile data
-				/** This is faster if I do not re-lookup the game
 				JSONArray recentlyPlayedGameList = (JSONArray) recentGames.get("games");
 				JSONArray ownedGamesList = (JSONArray) ownedGames.get("games");
 				
 				int recentlyPlayedListSize = recentlyPlayedGameList.size();
-				int ownedGamesListSize = ownedGamesList.size();
-				for(int t=0; t<ownedGamesListSize; t++) {
-					SteamProfileGameInfo newGameEntry = objectMapper.readValue(ownedGamesList.get(t).toString(), SteamProfileGameInfo.class);
-					System.out.println(newGameEntry.getName());
-				}
-				*/
+
+				// TODO int ownedGamesListSize = ownedGamesList.size();
+
+				int recentPlaytimeCount = 0;
 				
-				// Loop recent games
-				/** These methods need to be redesigned for speed these loops are outrageous
-				for(int i=0; i<recentlyPlayedListSize; i++) {
-					SteamProfileGameInfo newGameEntry = objectMapper.readValue(recentlyPlayedGameList.get(i).toString(), SteamProfileGameInfo.class);
-					saveGame(String.valueOf(newGameEntry.getAppid()));
+				for(int t=0; t<recentlyPlayedListSize; t++) {
+
+					JSONObject newGameObject = (JSONObject) recentlyPlayedGameList.get(t);
+					String playtimeString = newGameObject.getAsString("playtime_2weeks");
+					recentPlaytimeCount += Integer.parseInt(playtimeString);
+					
+					/** SAVE THIS CODE, It would be so much more beautiful to store the recent games as an object
+					SteamProfileGameInfo newGameEntry = objectMapper.readValue(recentlyPlayedGameList.get(t).toString(), SteamProfileGameInfo.class);
+					
+					System.out.println("Parsed new game: " + newGameEntry.getName());
+					System.out.println("Recent playtime:" + newGameEntry.getPlaytime_2weeks());
+					recentPlaytimeCount += newGameEntry.getPlaytime_2weeks();
+					
+					userRecentlyPlayed.add(newGameEntry);
+					*/
 				}
-				for(int t=0; t<ownedGamesListSize; t++) {
-					SteamProfileGameInfo newGameEntry = objectMapper.readValue(ownedGamesList.get(t).toString(), SteamProfileGameInfo.class);
-					saveGame(String.valueOf(newGameEntry.getAppid()));
-				}
-				*/
+				userProfile.setRecentlyPlayed_Playtime(recentPlaytimeCount);
 				
 				profile.add(userProfile);
 			} catch (Exception e) {
@@ -154,25 +158,6 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 			SteamUserStatInfo newFriendStats = new SteamUserStatInfo(newFriendData.getSteamID(), gameName, newFriendData.getStats());
 			gameStats.add(newFriendStats);
 		}
-		
-		/**
-		// TODO Add functionality for friends search
-		String steamSearchURL = this.steamGameStatsEndpoint + "&steamid=" + SteamID64 + "&appid=" + appID;
-
-		JSONObject getRequest = getRequest(steamSearchURL);
-		JSONObject responseData = (JSONObject) getRequest.get("playerstats");
-
-		try {
-			SteamGameInfo newEntry = objectMapper.readValue(responseData.toJSONString(), SteamGameInfo.class);
-			SteamUserStatInfo newStats = new SteamUserStatInfo();
-			newStats.setSteamID64(newEntry.getSteamID());
-			newStats.setGameName(newEntry.getGameName());
-			newStats.setStats(newEntry.getStats());
-			gameStats.add(newStats);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		*/
 		return gameStats;
 
 	}

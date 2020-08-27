@@ -7,9 +7,11 @@ import lombok.ToString;
 @ToString(includeFieldNames=true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+
 public class SteamProfileGameInfo {
 	private long appid;
 	private String name;
+	private String img_logo_url;
 	private int playtime_forever;
 	private int playtime_2weeks;
 }
