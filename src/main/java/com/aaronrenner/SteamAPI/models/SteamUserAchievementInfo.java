@@ -15,5 +15,11 @@ public class SteamUserAchievementInfo {
 	public SteamUserAchievementInfo() {
 		achievements = new ArrayList<>();
 	}
+	
+	public SteamUserAchievementInfo(String SteamID64, String gameName, ArrayList<SteamAchievementLayout> achievements) {
+		this.SteamID64 = SteamID64;
+		this.gameName = gameName;
+		this.achievements = achievements;
+	}
 
 }

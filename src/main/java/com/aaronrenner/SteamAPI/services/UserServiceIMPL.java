@@ -30,20 +30,20 @@ public class UserServiceIMPL implements UserService {
 
 	@Override
 	public User createUser(User newUser) {
-		User checkUser = userRepository.findBySteamID64(newUser.getSteamID64());
-		if(checkUser != null) {
+		Optional<User> checkUser = userRepository.findBySteamID64(newUser.getSteamID64());
+		if(checkUser.isPresent()) {
 			throw new UserExists(newUser.getSteamID64());
 		} else {
-			userRepository.save(newUser);
-			return userRepository.findBySteamID64(newUser.getSteamID64());
+			return userRepository.save(newUser);
 		}
 	}
 
 	@Override
 	public User getUser(String steamID64) {
-		User userSearch = userRepository.findBySteamID64(steamID64);
-		if(userSearch != null) {
-			return userSearch;
+		Optional<User> userSearch = userRepository.findBySteamID64(steamID64);
+		if(userSearch.isPresent()) {
+			User user = userSearch.get();
+			return user;
 		} else {
 			throw new UserNotFound(steamID64);
 		}

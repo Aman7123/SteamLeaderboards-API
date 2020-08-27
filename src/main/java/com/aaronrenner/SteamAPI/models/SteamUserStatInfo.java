@@ -15,4 +15,10 @@ public class SteamUserStatInfo {
 	public SteamUserStatInfo() {
 		stats = new ArrayList<>();
 	}
+	
+	public SteamUserStatInfo(String SteamID64, String gameName, ArrayList<SteamStatLayout> stats) {
+		this.SteamID64 = SteamID64;
+		this.gameName = gameName;
+		this.stats = stats;
+	}
 }
