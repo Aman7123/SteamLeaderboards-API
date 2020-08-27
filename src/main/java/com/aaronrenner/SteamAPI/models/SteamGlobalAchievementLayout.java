@@ -10,17 +10,17 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 
 /**
- * This is the layout for what a statistic looks like inside of the array returned by Steam
+ * This model represents the global data returned for an achievement
  * @author aaronrenner
  *
  */
-public class SteamStatLayout {
-	
+
+public class SteamGlobalAchievementLayout {
+
 	private String name;
-	private long value;
+	private long precent;
 	
-	public SteamStatLayout() {
+	public SteamGlobalAchievementLayout() {
 		
 	}
-
 }

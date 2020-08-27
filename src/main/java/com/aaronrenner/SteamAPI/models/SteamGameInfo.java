@@ -9,6 +9,12 @@ import lombok.ToString;
 @ToString(includeFieldNames=true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+
+/**
+ * This model represents the layout of how the Steam "GetUserStatsForGame/v2" endpoint returns the data
+ * @author aaronrenner
+ *
+ */
 public class SteamGameInfo {
 
 	private String steamID;

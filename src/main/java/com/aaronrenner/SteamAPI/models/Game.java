@@ -8,6 +8,13 @@ import lombok.ToString;
 @Data
 @Entity
 @Table(name = "game")
+
+/**
+ * This model represents the database for the game data I store
+ * 
+ * @author aaronrenner
+ *
+ */
 public class Game {
 	
 	@Id

@@ -8,6 +8,12 @@ import lombok.ToString;
 @ToString(includeFieldNames=true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+
+/**
+ * This model represents the layout for a simple achievement in the steam endpoint
+ * @author aaronrenner
+ *
+ */
 public class SteamAchievementLayout {
 
 	private String name;

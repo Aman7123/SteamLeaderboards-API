@@ -12,6 +12,14 @@ import lombok.ToString;
 @Entity
 @Table(name="friend_list")
 @JsonIgnoreProperties({"id"})
+
+/**
+ * This model represents the database and common referenced data model throughout this project. It is simply the two data variables below.
+ * 
+ * @author aaronrenner
+ *
+ */
+
 public class FriendID {
 	@Id
 	@GeneratedValue

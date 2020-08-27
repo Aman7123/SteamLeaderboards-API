@@ -13,6 +13,7 @@ import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.SteamProfile;
 import com.aaronrenner.SteamAPI.models.SteamUserAchievementInfo;
 import com.aaronrenner.SteamAPI.models.SteamGameInfo;
+import com.aaronrenner.SteamAPI.models.SteamGlobalAchievementLayout;
 import com.aaronrenner.SteamAPI.models.SteamUserStatInfo;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
@@ -32,6 +33,8 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	final private String steamOwnedGamesEndpoint = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=" + this.steamKey;
 	final private String steamProfileLevelEndpoint = "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + this.steamKey;
 	final private String steamProfileBadgeEndpoint = "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=" + this.steamKey;
+	final private String steamGlobalGameAchievements = "https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/?key=" + this.steamKey;
+	final private String steamGlobalGameStats = "https://api.steampowered.com/ISteamUserStats/GetGlobalStatsForGame/v1/?key=" + this.steamKey;
 	private RestTemplate restTemplate = new RestTemplate();
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
