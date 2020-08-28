@@ -50,7 +50,9 @@ public class UserServiceIMPL implements UserService {
 	}
 
 	@Override
+	// TODO dont let change steamID to something that exists if it did!
 	public User updateUser(String steamID64, User updateUser) {
+		System.out.println("fix me UserService-55");
 		User storedUserModel = getUser(steamID64);
 		if(updateUser.getSteamID64() != null) {
 			storedUserModel.setSteamID64(updateUser.getSteamID64());
@@ -80,8 +82,10 @@ public class UserServiceIMPL implements UserService {
 		return userSearch.getFriendList();
 
 	}
-
+	
 	@Override
+	// TODO Check that id's are within size
+	// TODO dont let add user as self friend
 	public FriendID createFriend(String steamID64, String friendSteamID64) {
 		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);

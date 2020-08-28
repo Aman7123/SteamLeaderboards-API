@@ -5,16 +5,13 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
+import com.aaronrenner.SteamAPI.exceptions.SteamError;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.SteamProfile;
-import com.aaronrenner.SteamAPI.models.SteamProfileGameInfo;
 import com.aaronrenner.SteamAPI.models.SteamUserAchievementInfo;
 import com.aaronrenner.SteamAPI.models.SteamGameInfo;
-import com.aaronrenner.SteamAPI.models.SteamGlobalAchievementLayout;
 import com.aaronrenner.SteamAPI.models.SteamUserStatInfo;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
@@ -29,13 +26,12 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	final private String steamKey = "E7F6470D0BAFE99CED3362CB2DB5F25B";
 	final private String steamProfileEndpoint = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + this.steamKey;
 	final private String steamGameStatsEndpoint = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=" + this.steamKey;
+	// TODO Figure out how to pass this into thread
 	final private String steamGameInfoEndpoint = "http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=" + this.steamKey;
 	final private String steamRecentlyPlayedEndpoint = "http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=" + this.steamKey;
 	final private String steamOwnedGamesEndpoint = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=" + this.steamKey;
 	final private String steamProfileLevelEndpoint = "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + this.steamKey;
 	final private String steamProfileBadgeEndpoint = "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=" + this.steamKey;
-	final private String steamGlobalGameAchievements = "https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/?key=" + this.steamKey;
-	final private String steamGlobalGameStats = "https://api.steampowered.com/ISteamUserStats/GetGlobalStatsForGame/v1/?key=" + this.steamKey;
 	private RestTemplate restTemplate = new RestTemplate();
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -49,6 +45,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	GameService gameService;
 
 	@Override
+	// TODO fix for user search 76561198079513535
 	public List<SteamProfile> getSteamProfile(String SteamID64) {
 		Optional<List<FriendID>> userFriendList = getUserFriends(SteamID64);
 		String friendIDList = "";
@@ -90,10 +87,10 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				JSONArray ownedGamesList = (JSONArray) ownedGames.get("games");
 				
 				int recentlyPlayedListSize = recentlyPlayedGameList.size();
-
-				// TODO int ownedGamesListSize = ownedGamesList.size();
+				int ownedGamesListSize = ownedGamesList.size();
 
 				int recentPlaytimeCount = 0;
+				int foreverPlaytime = 0;
 				
 				for(int t=0; t<recentlyPlayedListSize; t++) {
 
@@ -113,11 +110,31 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				}
 				userProfile.setRecentlyPlayed_Playtime(recentPlaytimeCount);
 				
+				for(int g=0; g<ownedGamesListSize; g++) {
+					JSONObject newGameObject = (JSONObject) ownedGamesList.get(g);
+					String playtimeString = newGameObject.getAsString("playtime_forever");
+					foreverPlaytime+= Integer.parseInt(playtimeString);
+					
+					String appid = newGameObject.getAsString("appid");
+					Optional<String> name = Optional.of(newGameObject.getAsString("name"));
+					saveGame(appid, name);
+				}
+				userProfile.setTotalPlaytime(foreverPlaytime);
+				
 				profile.add(userProfile);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
+				
+				
+			} catch (NullPointerException nP) {
+				SteamProfile userProfile = new SteamProfile();
+				try {
+					userProfile = objectMapper.readValue(playerData.get(x).toString(), SteamProfile.class);
+				} catch (Exception jsonError) {
+					jsonError.printStackTrace();
+				}
+				profile.add(userProfile);
+			} catch(Exception jMapError) {
+				jMapError.printStackTrace();
+			}
 		}
 		
 		return profile;
@@ -129,7 +146,8 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		List<SteamUserStatInfo> gameStats = new ArrayList<>();
 		
 		// First: Save the game in our DB
-		saveGame(appID);
+		Optional<String> dontKnowName = Optional.empty();
+		saveGame(appID, dontKnowName);
 		
 		//Check if user has friends (haha probably not)
 		Optional<List<FriendID>> oLFID = getUserFriends(SteamID64);
@@ -168,7 +186,8 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		List<SteamUserAchievementInfo> gameAchievements = new ArrayList<>();
 		
 		// First: Save the game in our DB
-		saveGame(appID);
+		Optional<String> dontKnowName = Optional.empty();
+		saveGame(appID, dontKnowName);
 		
 		//Check if user has friends (haha probably not)
 		Optional<List<FriendID>> oLFID = getUserFriends(SteamID64);
@@ -185,7 +204,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		}
 		
 		Optional<Game> gameInfo = searchGame(appID);
-		String gameName = "";
+		String gameName;
 		
 		for(FriendID fID : masterLoopList) {
 			SteamGameInfo newFriendData = getSteamPersonalGameProgressEndpoint(fID.getSteamID64(), appID);
@@ -248,7 +267,6 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		return newURI;
 	}
 	
-	// TODO Current work
 	private Optional<List<FriendID>> getUserFriends(String SteamID64) {
 		Optional<User> activeUser = userRepository.findBySteamID64(SteamID64);
 		Optional<List<FriendID>> oLFID = Optional.empty();
@@ -268,24 +286,38 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	
 	/**
 	 * This method will test our DB for a game, if it does not exist we create and save a new game.
+	 * This method is now crazy quick, secret is to wrap code in a new thread!
+	 * 
 	 * @param appID The games id # in Steams systems
 	 */
-	private void saveGame(String appID) {
-		Optional<Game> gameSearch = searchGame(appID);
+	private void saveGame(String appID, Optional<String> name) {
+		new Thread(new Runnable() {
+		    public void run() {
+				Optional<Game> gameSearch = searchGame(appID);
 		
-		if(!gameSearch.isPresent()) {
-			String steamGameInfo = this.steamGameInfoEndpoint + "&appid=" + appID;
-
-			JSONObject getRequest = getRequest(steamGameInfo);
-			JSONObject gameData = (JSONObject) getRequest.get("game");
-			
-			String gameName = gameData.getAsString("gameName");
-			
-			Game newGame = new Game();
-			newGame.setId(Long.parseLong(appID));
-			newGame.setTitle(gameName);
-			gameRepository.save(newGame);
-		}
+				if(!gameSearch.isPresent()) {
+					System.out.println("Saving new game...");
+					if(name.isPresent()) {
+						long appid = Long.parseLong(appID);
+						Game newGameEntry = new Game(appid, name.get());
+						newGameEntry = gameRepository.save(newGameEntry);
+						System.out.println(newGameEntry.toString());
+					} else {
+						// TODO Make this global url
+						String steamGameInfo = "http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=E7F6470D0BAFE99CED3362CB2DB5F25B"+ "&appid=" + appID;
+		
+						JSONObject getRequest = getRequest(steamGameInfo);
+						JSONObject gameData = (JSONObject) getRequest.get("game");
+						
+						String gameName = gameData.getAsString("gameName");
+						
+						Game newGame = new Game(Long.parseLong(appID), gameName);
+						newGame = gameRepository.save(newGame);
+						System.out.println(newGame.toString());
+					}
+				}
+		    }
+		}).start();
 	}
 	
 	/**
@@ -301,9 +333,11 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 			result = restTemplate.getForEntity(createURI, String.class);
 			newResponse = parseJSON(result.getBody());
 		} catch (HttpClientErrorException hCEE) {
-			// TODO throw new SteamError(hCEE.getRawStatusCode());
+			// TODO Understand code block more
+			System.out.println(new SteamError(hCEE.getRawStatusCode()) + " - Safe to ignore?");
 		} catch (HttpServerErrorException hSEE) {
-			// TODO throw new SteamError(hSEE.getRawStatusCode());
+			// TODO Understand and make code block better
+			System.out.println(new SteamError(hSEE.getRawStatusCode()) + " - Safe to ignore?");
 		}
 		return newResponse;
 		

@@ -14,4 +14,10 @@ public class SteamProfileGameInfo {
 	private String img_logo_url;
 	private int playtime_forever;
 	private int playtime_2weeks;
+	
+	public SteamProfileGameInfo(long appid, String name, int playtime_forever) {
+		this.appid=appid;
+		this.name=name;
+		this.playtime_forever=playtime_forever;
+	}
 }

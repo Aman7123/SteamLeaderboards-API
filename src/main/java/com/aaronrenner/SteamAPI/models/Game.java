@@ -21,5 +21,12 @@ public class Game {
 	private long id;
 	private String title;
 
-
+	public Game() {
+		
+	}
+	
+	public Game(long appid, String name) {
+		this.id = appid;
+		this.title=name;
+	}
 }
