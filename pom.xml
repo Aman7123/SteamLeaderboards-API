@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.3.2.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.aaronrenner</groupId>
 	<artifactId>SteamAPI</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SteamAPI</name>
-	<description>Demo project for Spring Boot</description>
-
+	<description>This is an API service made for my company ms3-inc.com for my internship. This project is based around collecting data from the SteamAPI as a proxy service but includes many new features that you can only get by using my user service.</description>
+	<url>https://www.aaronrenner.com</url>
+	<developers>
+		<developer>
+			<name>Aaron Renner</name>
+			<email>aaron@artechnology.com</email>
+			<organization>AR Technology, LLC.</organization>
+			<organizationUrl>https://www.artechnology.com</organizationUrl>
+		</developer>
+	</developers>
+	<organization>
+		<name>Mountain State Software Solutions</name>
+		<url>https://www.ms3-inc.com</url>
+	</organization>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -45,6 +58,19 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -55,5 +81,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
