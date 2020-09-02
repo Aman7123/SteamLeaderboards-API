@@ -9,5 +9,6 @@ import com.aaronrenner.SteamAPI.models.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	
 	Optional<User> findBySteamID64(String steamID64);
+	Optional<User> findByUsername(String Username);
 
 }

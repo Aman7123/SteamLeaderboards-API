@@ -2,7 +2,6 @@ package com.aaronrenner.SteamAPI.models;
 
 import java.util.*;
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import lombok.ToString;
 
@@ -10,7 +9,6 @@ import lombok.ToString;
 @Entity
 @Data
 @Table(name="user")
-@JsonIgnoreProperties({"id", "role"})
 public class User {
 
 	@Id
@@ -20,6 +18,7 @@ public class User {
 	private String steamID64;
 	// TODO figure out why cannot use @JsonProperty WRITE_ONLY
 	private String password;
+	// TODO default value for role
 	private String role;
 	
 	@OneToMany()

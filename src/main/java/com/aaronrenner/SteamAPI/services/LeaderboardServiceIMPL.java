@@ -3,6 +3,7 @@ package com.aaronrenner.SteamAPI.services;
 import java.net.*;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.*;
@@ -34,6 +35,10 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	final private String steamProfileBadgeEndpoint = "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=" + this.steamKey;
 	private RestTemplate restTemplate = new RestTemplate();
 	private ObjectMapper objectMapper = new ObjectMapper();
+	// TODO Fix or remove this
+	@Value("${com.aaronrenner.apikey}")
+	String test;
+	String test2 = test;
 	
 	@Autowired
 	UserRepository userRepository;
@@ -43,6 +48,11 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	
 	@Autowired
 	GameService gameService;
+	
+	public LeaderboardServiceIMPL() {
+		System.out.println(this.test);
+		System.out.println(this.test2);
+	}
 
 	@Override
 	// TODO fix for user search 76561198079513535
