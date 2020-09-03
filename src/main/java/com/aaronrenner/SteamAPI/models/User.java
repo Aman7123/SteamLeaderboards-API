@@ -9,6 +9,14 @@ import lombok.ToString;
 @Entity
 @Data
 @Table(name="user")
+
+/**
+ * This class represents the data structure of a user object in code and in the database, this class creates its own data tables
+ * 
+ * @author aaronrenner
+ *
+ */
+
 public class User {
 
 	@Id
@@ -16,9 +24,7 @@ public class User {
 	private long id;
 	private String username;
 	private String steamID64;
-	// TODO figure out why cannot use @JsonProperty WRITE_ONLY
 	private String password;
-	// TODO default value for role
 	private String role;
 	
 	@OneToMany()

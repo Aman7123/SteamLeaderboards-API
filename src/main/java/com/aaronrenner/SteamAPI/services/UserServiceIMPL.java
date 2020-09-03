@@ -3,7 +3,7 @@ package com.aaronrenner.SteamAPI.services;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.aaronrenner.SteamAPI.exceptions.BadRequestError;
 import com.aaronrenner.SteamAPI.exceptions.FriendExists;
 import com.aaronrenner.SteamAPI.exceptions.FriendNotFound;
 import com.aaronrenner.SteamAPI.exceptions.UserExists;
@@ -31,11 +31,25 @@ public class UserServiceIMPL implements UserService {
 	@Override
 	public User createUser(User newUser) {
 		Optional<User> checkUser = userRepository.findBySteamID64(newUser.getSteamID64());
-		if(checkUser.isPresent()) {
-			throw new UserExists(newUser.getSteamID64());
-		} else {
-			return userRepository.save(newUser);
+		Optional<User> checkForUserByUsername = userRepository.findByUsername(newUser.getUsername());
+		if(!checkUser.isPresent() && !checkForUserByUsername.isPresent()) {
+			if(newUser.getPassword() != null && newUser.getSteamID64() != null && newUser.getUsername() != null) {
+				if(checkSteamID(newUser.getSteamID64())) {
+					if(!(newUser.getRole() != null) && Long.valueOf(newUser.getId()).equals(Long.valueOf(0))) {
+						newUser.setRole("user");
+						// TODO override password to hash
+						return userRepository.save(newUser);
+					} else {
+						throw new BadRequestError("Account must be created with and ONLY with \"username\", \"steamID64\" and \"password\"");
+					}
+				} else {
+					throw new BadRequestError("The steamID was not of valid format");
+				}
+			} else {
+				throw new BadRequestError("Missing or incomplete \"username\", \"steamID64\" and \"password\" fields");
+			}
 		}
+		throw new UserExists(newUser.getSteamID64());
 	}
 
 	@Override
@@ -50,15 +64,18 @@ public class UserServiceIMPL implements UserService {
 	}
 
 	@Override
-	// TODO dont let change steamID to something that exists if it did!
 	public User updateUser(String steamID64, User updateUser) {
-		System.out.println("fix me UserService-55");
 		User storedUserModel = getUser(steamID64);
-		if(updateUser.getSteamID64() != null) {
-			storedUserModel.setSteamID64(updateUser.getSteamID64());
-		} if(updateUser.getUsername() != null) {
-			storedUserModel.setUsername(updateUser.getUsername());
+		if(updateUser.getUsername() != null) {
+			Optional<User> checkIfUserExists = userRepository.findByUsername(updateUser.getUsername());
+			// Makes sure user name does not exist already
+			if(checkIfUserExists.isEmpty()) {
+				storedUserModel.setUsername(updateUser.getUsername());				
+			} else {
+				throw new UserExists(checkIfUserExists.get().getSteamID64());
+			}
 		} if(updateUser.getPassword() != null) {
+			// TODO update password hash
 			storedUserModel.setPassword(updateUser.getPassword());
 		}
 		return this.userRepository.save(storedUserModel);
@@ -85,8 +102,16 @@ public class UserServiceIMPL implements UserService {
 	
 	@Override
 	// TODO Check that id's are within size
-	// TODO dont let add user as self friend
 	public FriendID createFriend(String steamID64, String friendSteamID64) {
+		// Makes sure user must be lonely and cannot friend self
+		if(steamID64.equals(friendSteamID64)) {
+			throw new FriendExists(steamID64, friendSteamID64);
+		}
+		
+		// Check format of new friend entry
+		if(!checkSteamID(friendSteamID64)) {
+			throw new BadRequestError("Check the format of the friend steamID");
+		}
 		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
 
@@ -127,6 +152,15 @@ public class UserServiceIMPL implements UserService {
 			throw new FriendNotFound(steamID64, friendSteamID64);
 		}
 		
+	}
+
+	private boolean checkSteamID(String steamID64) {
+		int inputlength = steamID64.length();
+		boolean isNumbers = steamID64.matches("[0-9]+");
+		if(inputlength == 17 && isNumbers) {
+			return true;
+		}
+		return false;
 	}
 
 }
