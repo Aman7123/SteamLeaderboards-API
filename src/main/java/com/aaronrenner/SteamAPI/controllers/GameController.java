@@ -45,6 +45,8 @@ public class GameController {
 			User approvedeUser = getUserFromAuth(oAuthToken.get());
 			if(approvedeUser.getRole().equals("admin")) {
 				this.gameService.updateGame(appID, gameModel);
+			} else {
+				throw new AuthorizationError("Missing permission, you cannot update a game");
 			}
 		} else {
 			// Catch no included OAuth header
@@ -60,7 +62,9 @@ public class GameController {
 			User approvedeUser = getUserFromAuth(oAuthToken.get());
 			if(approvedeUser.getRole().equals("admin")) {
 				this.gameService.createGame(gameEntry);
-			} 
+			}  else {
+				throw new AuthorizationError("Missing permission, you cannot create a game");
+			}
 		} else {
 			// Catch no included OAuth header
 			throw new AuthorizationError("Missing JWT token, POST \"/users\" or \"/login\" first");			

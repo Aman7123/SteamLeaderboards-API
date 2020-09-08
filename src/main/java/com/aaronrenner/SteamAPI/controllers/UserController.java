@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import com.aaronrenner.SteamAPI.exceptions.AuthorizationError;
+import com.aaronrenner.SteamAPI.exceptions.BadRequestError;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.services.LoginService;
@@ -45,8 +46,7 @@ public class UserController {
 		if(newUser.isPresent()) {
 			this.userService.createUser(newUser.get());
 		}
-		// TODO More like bad request
-		throw new AuthorizationError("Missing JSON with \"username\", \"steamID64\" and \"password\"");
+		throw new BadRequestError("Missing JSON with \"username\", \"steamID64\" and \"password\"");
 	}
 	
 	// USER SPECIFIC ENDPOINT
@@ -110,6 +110,7 @@ public class UserController {
 	
 	@PostMapping(SELECTUSERFRIENDURL)
 	@ResponseStatus(value= HttpStatus.CREATED)
+	// TODO fix
 	public void createFriend(@RequestHeader("Authorization") Optional<String> oAuthToken, @PathVariable String steamID64, @PathVariable String friendSteamID64) {
 		if(oAuthToken.isPresent()) { // if authorization
 			User approvedeUser = getUserFromAuth(oAuthToken.get());

@@ -8,9 +8,9 @@ import org.springframework.web.client.HttpClientErrorException.BadRequest;
 public class BadRequestErrorAdvice  {
 	
 	@ResponseBody
-	@ExceptionHandler(BadRequest.class)
+	@ExceptionHandler(BadRequestError.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	String badRequestError(BadRequest bRE) {
+	String badRequestError(BadRequestError bRE) {
 		return bRE.getMessage();
 	}
 }

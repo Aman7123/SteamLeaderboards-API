@@ -12,6 +12,7 @@ import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.FriendRepository;
 import com.aaronrenner.SteamAPI.repositories.UserRepository;
+import com.aaronrenner.SteamAPI.security.PasswordEncoder;
 
 @Service
 public class UserServiceIMPL implements UserService {
@@ -21,6 +22,9 @@ public class UserServiceIMPL implements UserService {
 	
 	@Autowired
 	FriendRepository friendRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 	
 	
 	@Override
@@ -33,11 +37,15 @@ public class UserServiceIMPL implements UserService {
 		Optional<User> checkUser = userRepository.findBySteamID64(newUser.getSteamID64());
 		Optional<User> checkForUserByUsername = userRepository.findByUsername(newUser.getUsername());
 		if(!checkUser.isPresent() && !checkForUserByUsername.isPresent()) {
+			// TODO add password minimum length
 			if(newUser.getPassword() != null && newUser.getSteamID64() != null && newUser.getUsername() != null) {
 				if(checkSteamID(newUser.getSteamID64())) {
 					if(!(newUser.getRole() != null) && Long.valueOf(newUser.getId()).equals(Long.valueOf(0))) {
 						newUser.setRole("user");
-						// TODO override password to hash
+						// Encode password
+						String encodePassword = passwordEncoder.encodePassword(newUser.getPassword());
+						newUser.setPassword(encodePassword);
+						
 						return userRepository.save(newUser);
 					} else {
 						throw new BadRequestError("Account must be created with and ONLY with \"username\", \"steamID64\" and \"password\"");
@@ -66,18 +74,30 @@ public class UserServiceIMPL implements UserService {
 	@Override
 	public User updateUser(String steamID64, User updateUser) {
 		User storedUserModel = getUser(steamID64);
-		if(updateUser.getUsername() != null) {
-			Optional<User> checkIfUserExists = userRepository.findByUsername(updateUser.getUsername());
-			// Makes sure user name does not exist already
-			if(checkIfUserExists.isEmpty()) {
-				storedUserModel.setUsername(updateUser.getUsername());				
-			} else {
-				throw new UserExists(checkIfUserExists.get().getSteamID64());
+		if(updateUser.getUsername() != null && updateUser.getPassword() != null) {
+			if(updateUser.getUsername() != null) {
+				Optional<User> checkIfUserExists = userRepository.findByUsername(updateUser.getUsername());
+				if(steamID64.equals(checkIfUserExists.get().getSteamID64())) {
+					// Makes sure user name does not exist already
+					if(checkIfUserExists.isPresent()) {
+						storedUserModel.setUsername(updateUser.getUsername());				
+					} else {
+						throw new UserExists(checkIfUserExists.get().getSteamID64());
+					}	
+				}  else {
+					throw new BadRequestError("That username is already in use");
+				}
 			}
-		} if(updateUser.getPassword() != null) {
-			// TODO update password hash
-			storedUserModel.setPassword(updateUser.getPassword());
+			if(updateUser.getPassword() != null) {
+				// Update the encoded password
+				String encodedPassword = passwordEncoder.encodePassword(updateUser.getPassword());
+				storedUserModel.setPassword(encodedPassword);
+			}	
+		
+		} else {
+			throw new BadRequestError("Update the \"username\" and/or \"password\" only");
 		}
+
 		return this.userRepository.save(storedUserModel);
 	}
 
@@ -101,7 +121,7 @@ public class UserServiceIMPL implements UserService {
 	}
 	
 	@Override
-	// TODO Check that id's are within size
+	// TODO fix
 	public FriendID createFriend(String steamID64, String friendSteamID64) {
 		// Makes sure user must be lonely and cannot friend self
 		if(steamID64.equals(friendSteamID64)) {

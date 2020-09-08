@@ -11,6 +11,7 @@ import com.aaronrenner.SteamAPI.exceptions.BadRequestError;
 import com.aaronrenner.SteamAPI.models.Token;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.UserRepository;
+import com.aaronrenner.SteamAPI.security.PasswordEncoder;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -26,14 +27,17 @@ public class LoginServiceIMPL implements LoginService {
 	private String tokenkey = "";
 	
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Override
 	public Token createToken(User bufferUser) {
 		Optional<User> registeredUser = userRepository.findByUsername(bufferUser.getUsername());
 		if(registeredUser.isPresent()) {
 			User perminantUser = registeredUser.get();
-			if(bufferUser.getPassword() != null && bufferUser.getPassword().equals(perminantUser.getPassword())) {
+			if(bufferUser.getPassword() != null && passwordEncoder.checkPassword(bufferUser.getPassword(), perminantUser.getPassword())) {
 				try {
 					String username = perminantUser.getUsername();
 					String steamID64 = perminantUser.getSteamID64();

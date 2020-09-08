@@ -3,6 +3,7 @@ package com.aaronrenner.SteamAPI.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 public class TestController {
 	
@@ -10,6 +11,7 @@ public class TestController {
 	
 	@GetMapping(HELLOURL)
 	@ResponseStatus(value= HttpStatus.I_AM_A_TEAPOT)
-	public void hello() {}
+	public void hello() {
+	}
 
 }

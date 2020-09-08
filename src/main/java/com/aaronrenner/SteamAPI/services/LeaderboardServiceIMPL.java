@@ -335,10 +335,10 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 			newResponse = parseJSON(result.getBody());
 		} catch (HttpClientErrorException hCEE) {
 			// TODO Understand code block more
-			System.out.println(new SteamError(hCEE.getRawStatusCode()) + " - Safe to ignore?");
+			//System.out.println(new SteamError(hCEE.getRawStatusCode()) + " - Safe to ignore?");
 		} catch (HttpServerErrorException hSEE) {
 			// TODO Understand and make code block better
-			System.out.println(new SteamError(hSEE.getRawStatusCode()) + " - Safe to ignore?");
+			//System.out.println(new SteamError(hSEE.getRawStatusCode()) + " - Safe to ignore?");
 		}
 		return newResponse;
 		
