@@ -3,11 +3,9 @@ package com.aaronrenner.SteamAPI.services;
 import java.net.*;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.*;
-import com.aaronrenner.SteamAPI.exceptions.SteamError;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.SteamProfile;
@@ -309,8 +307,12 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		
 						JSONObject getRequest = getRequest(steamGameInfo);
 						JSONObject gameData = (JSONObject) getRequest.get("game");
-						
-						String gameName = gameData.getAsString("gameName");
+						String gameName = "";
+						try {
+							gameName = gameData.getAsString("gameName");
+						} catch(NullPointerException nPE) {
+							gameName = "";
+						}
 						
 						Game newGame = new Game(Long.parseLong(appID), gameName);
 						newGame = gameRepository.save(newGame);

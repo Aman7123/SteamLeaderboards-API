@@ -2,13 +2,15 @@ package com.aaronrenner.SteamAPI.models;
 
 import java.util.*;
 import javax.persistence.*;
-import lombok.Data;
-import lombok.ToString;
 
-@ToString(includeFieldNames=true)
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Data;
+
 @Entity
 @Data
 @Table(name="user")
+@JsonIgnoreProperties({"id", "role"})
 
 /**
  * This class represents the data structure of a user object in code and in the database, this class creates its own data tables

@@ -43,10 +43,10 @@ public class UserController {
 	@PostMapping(BASEURL)
 	@ResponseStatus(value= HttpStatus.CREATED)
 	public void createUser(@RequestBody Optional<User> newUser) {
-		if(newUser.isPresent()) {
-			this.userService.createUser(newUser.get());
+		if(newUser.isEmpty()) {
+			throw new BadRequestError("Missing JSON with \"username\", \"steamID64\" and \"password\"");
 		}
-		throw new BadRequestError("Missing JSON with \"username\", \"steamID64\" and \"password\"");
+		this.userService.createUser(newUser.get());
 	}
 	
 	// USER SPECIFIC ENDPOINT
@@ -81,16 +81,16 @@ public class UserController {
 	
 	@DeleteMapping(SELECTUSERURL)
 	public void deleteUser(@RequestHeader("Authorization") Optional<String> oAuthToken, @PathVariable String steamID64) {
-		if(oAuthToken.isPresent()) { // if authorization
-			User approvedeUser = getUserFromAuth(oAuthToken.get());
-			if(approvedeUser.getRole().equals("admin") || approvedeUser.getSteamID64().equals(steamID64)) {
-				this.userService.deleteUser(steamID64);
-			} else {
-				throw new AuthorizationError("Permission missing, try /users/<yourSteamID>");
-			}
+		if(oAuthToken.isEmpty()) {
+			throw new AuthorizationError("Missing JWT token, POST \"/users\" or \"/login\" first");
 		}
-		// Catch no included OAuth header
-		throw new AuthorizationError("Missing JWT token, POST \"/users\" or \"/login\" first");
+		
+		User approvedeUser = getUserFromAuth(oAuthToken.get());
+		if(approvedeUser.getRole().equals("admin") || approvedeUser.getSteamID64().equals(steamID64)) {
+			this.userService.deleteUser(steamID64);
+		} else {
+			throw new AuthorizationError("Permission missing, try /users/<yourSteamID>");
+		}
 	}
 	
 	// USER FRIENDS LIST COMMANDS
@@ -112,30 +112,31 @@ public class UserController {
 	@ResponseStatus(value= HttpStatus.CREATED)
 	// TODO fix
 	public void createFriend(@RequestHeader("Authorization") Optional<String> oAuthToken, @PathVariable String steamID64, @PathVariable String friendSteamID64) {
-		if(oAuthToken.isPresent()) { // if authorization
-			User approvedeUser = getUserFromAuth(oAuthToken.get());
-			if(approvedeUser.getRole().equals("admin") || approvedeUser.getSteamID64().equals(steamID64)) {
-				this.userService.createFriend(steamID64, friendSteamID64);
-			} else {
-				throw new AuthorizationError("Permission missing, try /users/<yourSteamID>");
-			}
+		if(oAuthToken.isEmpty()) {
+			throw new AuthorizationError("Missing JWT token, POST \"/users\" or \"/login\" first");
 		}
-		// Catch no included OAuth header
-		throw new AuthorizationError("Missing JWT token, POST \"/users\" or \"/login\" first");
+		
+		User approvedeUser = getUserFromAuth(oAuthToken.get());
+		if(approvedeUser.getRole().equals("admin") || approvedeUser.getSteamID64().equals(steamID64)) {
+			this.userService.createFriend(steamID64, friendSteamID64);
+		} else {
+			throw new AuthorizationError("Permission missing, try /users/<yourSteamID>");
+		}
 	}
 	
 	@DeleteMapping(SELECTUSERFRIENDURL)
 	public void deleteFriend(@RequestHeader("Authorization") Optional<String> oAuthToken, @PathVariable String steamID64, @PathVariable String friendSteamID64) {
-		if(oAuthToken.isPresent()) { // if authorization
-			User approvedeUser = getUserFromAuth(oAuthToken.get());
-			if(approvedeUser.getRole().equals("admin") || approvedeUser.getSteamID64().equals(steamID64)) {
-				this.userService.deleteFriend(steamID64, friendSteamID64);
-			} else {
-				throw new AuthorizationError("Permission missing, try /users/<yourSteamID>");
-			}
+		if(oAuthToken.isEmpty()) {
+			throw new AuthorizationError("Missing JWT token, POST \"/users\" or \"/login\" first");
 		}
-		// Catch no included OAuth header
-		throw new AuthorizationError("Missing JWT token, POST \"/users\" or \"/login\" first");
+		
+		User approvedeUser = getUserFromAuth(oAuthToken.get());
+		if(approvedeUser.getRole().equals("admin") || approvedeUser.getSteamID64().equals(steamID64)) {
+			this.userService.deleteFriend(steamID64, friendSteamID64);
+		} else {
+			throw new AuthorizationError("Permission missing, try /users/<yourSteamID>");
+		}
+
 	}
 	
 	private User getUserFromAuth(String bearerPass) {

@@ -78,7 +78,7 @@ public class LoginServiceIMPL implements LoginService {
 					if(userBySteamID.isPresent()) {
 						bufferUser = userBySteamID.get();
 					} else {
-						throw new AuthorizationError("Modified JWT detected, you are now being watched");
+						throw new AuthorizationError("Do not attempt to modify the JWT, POST a /users for an account or use /login to get a key");
 					}
 					
 				}

@@ -40,16 +40,14 @@ public class UserServiceIMPL implements UserService {
 			// TODO add password minimum length
 			if(newUser.getPassword() != null && newUser.getSteamID64() != null && newUser.getUsername() != null) {
 				if(checkSteamID(newUser.getSteamID64())) {
-					if(!(newUser.getRole() != null) && Long.valueOf(newUser.getId()).equals(Long.valueOf(0))) {
-						newUser.setRole("user");
-						// Encode password
-						String encodePassword = passwordEncoder.encodePassword(newUser.getPassword());
-						newUser.setPassword(encodePassword);
-						
-						return userRepository.save(newUser);
-					} else {
-						throw new BadRequestError("Account must be created with and ONLY with \"username\", \"steamID64\" and \"password\"");
-					}
+					// Set default
+					newUser.setRole("user");
+					newUser.setId(0);
+					// Encode password
+					String encodePassword = passwordEncoder.encodePassword(newUser.getPassword());
+					newUser.setPassword(encodePassword);
+					
+					return userRepository.save(newUser);
 				} else {
 					throw new BadRequestError("The steamID was not of valid format");
 				}
@@ -74,17 +72,12 @@ public class UserServiceIMPL implements UserService {
 	@Override
 	public User updateUser(String steamID64, User updateUser) {
 		User storedUserModel = getUser(steamID64);
-		if(updateUser.getUsername() != null && updateUser.getPassword() != null) {
+		if(updateUser.getUsername() != null || updateUser.getPassword() != null) {
 			if(updateUser.getUsername() != null) {
 				Optional<User> checkIfUserExists = userRepository.findByUsername(updateUser.getUsername());
 				if(steamID64.equals(checkIfUserExists.get().getSteamID64())) {
-					// Makes sure user name does not exist already
-					if(checkIfUserExists.isPresent()) {
-						storedUserModel.setUsername(updateUser.getUsername());				
-					} else {
-						throw new UserExists(checkIfUserExists.get().getSteamID64());
-					}	
-				}  else {
+					storedUserModel.setUsername(updateUser.getUsername());				
+				} else {
 					throw new BadRequestError("That username is already in use");
 				}
 			}
@@ -95,7 +88,7 @@ public class UserServiceIMPL implements UserService {
 			}	
 		
 		} else {
-			throw new BadRequestError("Update the \"username\" and/or \"password\" only");
+			throw new BadRequestError("Update the \"username\" and/or \"password\"");
 		}
 
 		return this.userRepository.save(storedUserModel);
@@ -125,7 +118,7 @@ public class UserServiceIMPL implements UserService {
 	public FriendID createFriend(String steamID64, String friendSteamID64) {
 		// Makes sure user must be lonely and cannot friend self
 		if(steamID64.equals(friendSteamID64)) {
-			throw new FriendExists(steamID64, friendSteamID64);
+			throw new BadRequestError("You want to be friends with yourself? Weirdo.");
 		}
 		
 		// Check format of new friend entry
@@ -157,7 +150,7 @@ public class UserServiceIMPL implements UserService {
 		User userSearch = getUser(steamID64);
 		boolean friendExist = false;
 		FriendID userFriend = null;
-		
+
 		for(FriendID fID : userSearch.getFriendList()) {
 			if(fID.getSteamID64().equals(friendSteamID64)) {
 				friendExist = true;

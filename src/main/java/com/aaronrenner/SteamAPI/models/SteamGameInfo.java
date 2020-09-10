@@ -2,11 +2,8 @@ package com.aaronrenner.SteamAPI.models;
 
 import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Data;
-import lombok.ToString;
 
-@ToString(includeFieldNames=true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 
