@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.aaronrenner</groupId>
 	<artifactId>SteamAPI</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-RELEASE</version>
 	<name>SteamAPI</name>
 	<description>This is an API service made for my company ms3-inc.com for my internship. This project is based around collecting data from the SteamAPI as a proxy service but includes many new features that you can only get by using my user service.</description>
 	<url>https://www.aaronrenner.com</url>
@@ -70,6 +70,10 @@
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>3.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 	</dependencies>
 

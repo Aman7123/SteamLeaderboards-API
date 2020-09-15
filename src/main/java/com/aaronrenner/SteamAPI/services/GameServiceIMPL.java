@@ -7,13 +7,14 @@ import com.aaronrenner.SteamAPI.exceptions.GameExists;
 import com.aaronrenner.SteamAPI.exceptions.GameNotFound;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
+import org.slf4j.*;
 
 @Service
 public class GameServiceIMPL implements GameService {
 	
 	@Autowired
 	GameRepository gameRepository;
-
+	
 	@Override
 	public List<Game> getGameList() {
 		return gameRepository.findAll();
