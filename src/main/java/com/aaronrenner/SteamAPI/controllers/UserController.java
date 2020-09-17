@@ -16,7 +16,7 @@ public class UserController {
 	
 	final private String BASEURL = "/users";
 	final private String SELECTUSERURL = BASEURL + "/{steamID64}";
-	final private String FRIENDBASEURL = SELECTUSERURL + "/friendslist";
+	final private String FRIENDBASEURL = SELECTUSERURL + "/friends-list";
 	final private String SELECTUSERFRIENDURL =  FRIENDBASEURL + "/{friendSteamID64}";
 	
 	@Autowired

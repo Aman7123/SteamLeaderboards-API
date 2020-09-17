@@ -3,6 +3,7 @@ package com.aaronrenner.SteamAPI.services;
 import java.net.*;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.*;
@@ -22,15 +23,14 @@ import net.minidev.json.parser.*;
 @Service
 public class LeaderboardServiceIMPL implements LeaderboardService {
 	
-	final private String steamKey = "E7F6470D0BAFE99CED3362CB2DB5F25B";
-	final private String steamProfileEndpoint = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + this.steamKey;
-	final private String steamGameStatsEndpoint = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=" + this.steamKey;
-	// TODO Figure out how to pass this into thread
-	final private String steamGameInfoEndpoint = "http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=" + this.steamKey;
-	final private String steamRecentlyPlayedEndpoint = "http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=" + this.steamKey;
-	final private String steamOwnedGamesEndpoint = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=" + this.steamKey;
-	final private String steamProfileLevelEndpoint = "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + this.steamKey;
-	final private String steamProfileBadgeEndpoint = "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=" + this.steamKey;
+	@Value("${com.aaronrenner.apikey}")
+	private String apikey;
+	private String steamProfileEndpoint = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=";
+	private String steamGameStatsEndpoint = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=";
+	private String steamRecentlyPlayedEndpoint = "http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=";
+	private String steamOwnedGamesEndpoint = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=";
+	private String steamProfileLevelEndpoint = "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=";
+	private String steamProfileBadgeEndpoint = "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=";
 	private RestTemplate restTemplate = new RestTemplate();
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -46,6 +46,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	@Override
 	// TODO fix for user search 76561198079513535
 	public List<SteamProfile> getSteamProfile(String SteamID64) {
+		populateSecurityKey();
 		Optional<List<FriendID>> userFriendList = getUserFriends(SteamID64);
 		String friendIDList = "";
 		if(userFriendList.isPresent()) {
@@ -141,6 +142,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 
 	@Override
 	public List<SteamUserStatInfo> getSteamStats(String SteamID64, String appID) {
+		populateSecurityKey();
 		//Master variable
 		List<SteamUserStatInfo> gameStats = new ArrayList<>();
 		
@@ -181,6 +183,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 
 	@Override
 	public List<SteamUserAchievementInfo> getSteamAchievements(String SteamID64, String appID) {
+		populateSecurityKey();
 		//Master variable
 		List<SteamUserAchievementInfo> gameAchievements = new ArrayList<>();
 		
@@ -291,9 +294,12 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	 */
 	private void saveGame(String appID, Optional<String> name) {
 		new Thread(new Runnable() {
-		    public void run() {
+			
+			@Value("${com.aaronrenner.apikey}")
+			private String apikey;
+			
+		    public void run() {	    	
 				Optional<Game> gameSearch = searchGame(appID);
-		
 				if(!gameSearch.isPresent()) {
 					System.out.println("Saving new game...");
 					if(name.isPresent()) {
@@ -302,8 +308,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 						newGameEntry = gameRepository.save(newGameEntry);
 						System.out.println(newGameEntry.toString());
 					} else {
-						// TODO Make this global url
-						String steamGameInfo = "http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=E7F6470D0BAFE99CED3362CB2DB5F25B"+ "&appid=" + appID;
+						String steamGameInfo = "http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=" + apikey + "&appid=" + appID;
 		
 						JSONObject getRequest = getRequest(steamGameInfo);
 						JSONObject gameData = (JSONObject) getRequest.get("game");
@@ -354,5 +359,14 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		// Fetch data from URL
 		JSONObject getRequest = getRequest(steamEndpoint);
 		return (JSONObject) getRequest.get("response");	
+	}
+	
+	private void populateSecurityKey() {
+		steamProfileEndpoint = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + this.apikey;
+		steamGameStatsEndpoint = "http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=" + this.apikey;
+		steamRecentlyPlayedEndpoint = "http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=" + this.apikey;
+		steamOwnedGamesEndpoint = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=" + this.apikey;
+		steamProfileLevelEndpoint = "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + this.apikey;
+		steamProfileBadgeEndpoint = "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=" + this.apikey;
 	}
 }

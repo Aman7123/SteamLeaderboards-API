@@ -9,8 +9,7 @@ import com.aaronrenner.SteamAPI.models.Game;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
 	
-	List<Game> findByTitle(String title);
-	List<Game> findByTitleIgnoreCase(String title);
+	List<Game> findByTitleContains(String title);
 	
 
 }
