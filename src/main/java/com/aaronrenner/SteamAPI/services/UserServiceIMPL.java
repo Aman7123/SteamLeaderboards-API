@@ -98,9 +98,9 @@ public class UserServiceIMPL implements UserService {
 	public void deleteUser(String steamID64) {
 		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
-
+		
 		this.userRepository.delete(userSearch);			
-
+		
 
 	}
 
