@@ -1,2 +1,2 @@
 # SteamLeaderboards-API
-Spring Boot application based on https://app.swaggerhub.com/apis/ARTechnology/steam-leaderboards/1.0.0
+Documentation (update 9/17): https://app.swaggerhub.com/apis/ARTechnology/steam-leaderboards/1.0.0
