@@ -6,7 +6,4 @@ import com.aaronrenner.SteamAPI.models.FriendID;
 
 @Repository
 public interface FriendRepository extends JpaRepository<FriendID, Long> {
-	
-	FriendID findBySteamID64(String SteamID64);
-	void deleteBySteamID64(String SteamID64);
 }

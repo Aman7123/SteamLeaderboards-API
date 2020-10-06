@@ -148,14 +148,4 @@ public class UserController {
 		throw new AuthorizationError("JWT token bad format, check header");
 
 	}
-	
-	/**
-	public void setUserService(UserService uService) {
-		this.userService = uService;
-	}
-	
-	public void setLoginService(LoginService lService) {
-		this.loginService = lService;
-	}
-	*/
 }

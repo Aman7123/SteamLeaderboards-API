@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
@@ -17,7 +18,7 @@ public class GameServiceTest {
 	@InjectMocks
 	private GameServiceIMPL gameService;
 	
-	@Mock
+	@MockBean
 	private GameRepository gameRepository;
 	
 	
@@ -36,8 +37,7 @@ public class GameServiceTest {
 		Optional<Game> fakeGame_Optional = Optional.of(fakeGame);
 		Mockito.when(gameRepository.findById(Mockito.anyLong())).thenReturn(fakeGame_Optional);
 		//createGame
-		Mockito.when(gameRepository.save(Mockito.any(Game.class))).thenReturn((Game) AdditionalAnswers.returnsFirstArg());
-		
+		Mockito.when(gameRepository.save(Mockito.any(Game.class))).thenReturn(fakeGame);
 	}
 	
 	@AfterEach
@@ -64,7 +64,7 @@ public class GameServiceTest {
 	
 	@Test
 	public void getGameByID_Success() {
-		Game realGame = gameService.getGameByID(666).get();
+		Game realGame = gameService.getGameByID(3).get();
 		
 		assertNotNull(realGame);
 		assert(fakeGame.getTitle() == realGame.getTitle());
