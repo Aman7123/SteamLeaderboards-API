@@ -4,9 +4,14 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.*;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
+import com.aaronrenner.SteamAPI.repositories.FriendRepository;
 import com.aaronrenner.SteamAPI.repositories.UserRepository;
 
 @SpringBootTest
@@ -18,75 +23,78 @@ public class UserServiceTest {
 	@Mock
 	private UserRepository userRepository;
 	
-	@Test
-	public void getAllUsersTest() {
-		List<User> allUserList = new ArrayList<>();
-		allUserList.add(fakeUserModel());
-		allUserList.add(fakeAdminModel());
-		Mockito.when(userRepository.findAll()).thenReturn(allUserList);
-		
-		List<User> realUsersList = userService.getUserList();
-		assertNotNull(realUsersList);
+	@Mock
+	private FriendRepository friendRepository;
+	
+	private List<User> fakeUserList;
+	private User fakeUser;
+	private FriendID fakeFriend;
+	
+	@BeforeEach
+	public void setUp() {
 		
 	}
 	
-	@Test
-	public void getUserBySteamID() {
-		Mockito.when(userRepository.findBySteamID64("007")).thenReturn(Optional.of(fakeUserModel()));
+	@AfterEach
+	public void tearDown() {
 		
-		User newUser = userService.getUser("007");
-		assertNotNull(newUser);
 	}
 	
-	@Test
-	public void addUser() {
-		userService.createUser(fake_realUser());
-	}
 	
 	@Test
-	public void updateUser() {
-		Optional<User> fakeUser = findTestUser();
-		if(fakeUser.isPresent()) {
-			Mockito.when(userRepository.findBySteamID64(fakeUser.get().getSteamID64())).thenReturn(fakeUser);			
-		}
+	public void getUserList_Success() {
 
 	}
 	
 	@Test
-	public void deleteUser() {
-		Optional<User> pullUser = findTestUser();
-		if(pullUser.isPresent()) {
-			userService.deleteUser(pullUser.get().getSteamID64());
-		}
+	public void getUserBySteamID_Success() {
+
 	}
 	
-	// TODO code addFriend, deleteFriend and updateFriend
+	@Test
+	public void createUser_Success() {
+
+	}
 	
-	private User fakeUserModel() {
+	@Test
+	public void updateUser_Success() {
+
+
+	}
+	
+	@Test
+	public void getFriends() {
+		List<FriendID> bufferFriends= new ArrayList<>();
+		
+		Mockito.when(friendRepository.findAll()).thenReturn(bufferFriends);
+		
+		List<FriendID> realFriendList = userService.getFriend("007");
+		assertNotNull(realFriendList);
+	}
+	
+	@Test
+	public void addFriend() {
+
+	}
+
+	
+	private List<User> fakeUserList() {
+		List<User> userList = new ArrayList<>();
+		userList.add(fakeUser(1));
+		userList.add(fakeUser(2));
+		return userList;
+	}
+	
+	private User fakeUser(long number) {
 		User newUser = new User();
-		newUser.setUsername("mock_user");
-		newUser.setSteamID64("000000");
+		newUser.setId(number);
+		newUser.setSteamID64("00" + number);
 		newUser.setPassword("1234");
+		newUser.setUsername("test_user");
 		return newUser;
 	}
 	
-	private User fakeAdminModel() {
-		User newUser = new User();
-		newUser.setUsername("mock_admin");
-		newUser.setSteamID64("000000");
-		newUser.setPassword("1234");
-		return newUser;
-	}
-	
-	private User fake_realUser() {
-		User newUser = new User();
-		newUser.setUsername("fake_user");
-		newUser.setSteamID64("12345678901234567");
-		newUser.setPassword("1234");
-		return newUser;
-	}
-	
-	private Optional<User> findTestUser() {
-		return userRepository.findByUsername("fake_user");
+	private FriendID fakeFriend() {
+		
 	}
 }

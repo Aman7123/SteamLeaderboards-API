@@ -100,8 +100,6 @@ public class UserServiceIMPL implements UserService {
 		User userSearch = getUser(steamID64);
 		
 		this.userRepository.delete(userSearch);			
-		
-
 	}
 
 	@Override

@@ -149,6 +149,7 @@ public class UserController {
 
 	}
 	
+	/**
 	public void setUserService(UserService uService) {
 		this.userService = uService;
 	}
@@ -156,4 +157,5 @@ public class UserController {
 	public void setLoginService(LoginService lService) {
 		this.loginService = lService;
 	}
+	*/
 }

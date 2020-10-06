@@ -56,8 +56,9 @@ public class GameServiceIMPL implements GameService {
 	@Override
 	public void deleteGame(long GameAppID) {
 		Optional<Game> checkGame = gameRepository.findById(GameAppID);
+		
 		if(checkGame.isPresent()) {
-			gameRepository.deleteById(GameAppID);
+			this.gameRepository.deleteById(GameAppID);
 		} else {
 			throw new GameNotFound(GameAppID);
 		}
