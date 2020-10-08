@@ -2,13 +2,11 @@ package com.aaronrenner.SteamAPI.services;
 
 import static org.junit.Assert.assertNotNull;
 import java.util.*;
-import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
 
@@ -18,7 +16,7 @@ public class GameServiceTest {
 	@InjectMocks
 	private GameServiceIMPL gameService;
 	
-	@MockBean
+	@Mock
 	private GameRepository gameRepository;
 	
 	
@@ -72,7 +70,7 @@ public class GameServiceTest {
 	
 	@Test
 	public void createGame_Success() {
-		
+		Mockito.when(gameRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 		Game realGame = gameService.createGame(fakeGame);
 		int gameCountBefore = fakeGameList.size();
 		fakeGameList.add(fakeGame);
@@ -85,6 +83,7 @@ public class GameServiceTest {
 	public void updateGame_Success() {
 		Game fakeGame_updated = fakeGame;
 		fakeGame_updated.setTitle("updated_name");
+		fakeGame = fakeGame(3);
 		
 		fakeGame_updated = gameService.updateGame(fakeGame_updated.getId(), fakeGame_updated);
 		

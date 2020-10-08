@@ -1,13 +1,13 @@
 package com.aaronrenner.SteamAPI.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.*;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +20,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.TokenTest;
 import com.aaronrenner.SteamAPI.services.GameServiceIMPL;
-import com.aaronrenner.SteamAPI.services.GameServiceTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class GameControllerTest {
 	
 	private String adminToken = "Bearer " + new TokenTest().getToken();
@@ -32,8 +32,6 @@ public class GameControllerTest {
 	
 	@Autowired
 	private MockMvc mockMvc;
-	
-	@InjectMocks
 	
 	@MockBean
 	private GameServiceIMPL gameService;

@@ -91,7 +91,7 @@ public class UserServiceIMPL implements UserService {
 			throw new BadRequestError("Update the \"username\" and/or \"password\"");
 		}
 
-		return this.userRepository.save(storedUserModel);
+		return userRepository.save(storedUserModel);
 	}
 
 	@Override

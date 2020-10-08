@@ -2,9 +2,7 @@ package com.aaronrenner.SteamAPI.models;
 
 import java.util.*;
 import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Data;
 
 @Entity
