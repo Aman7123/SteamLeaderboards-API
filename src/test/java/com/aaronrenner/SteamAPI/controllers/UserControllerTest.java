@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.TokenTest;
 import com.aaronrenner.SteamAPI.models.User;
@@ -103,7 +105,7 @@ public class UserControllerTest {
 	public void addUser() throws Exception {
 		String user_AsJSON = om.writeValueAsString(fakeUser);
 		
-		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/users").header("Authorization", adminToken).contentType(MediaType.APPLICATION_JSON).content(user_AsJSON).accept(MediaType.APPLICATION_JSON)).andReturn();
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(user_AsJSON).accept(MediaType.APPLICATION_JSON)).andReturn();
 		assert(201 == mvcResult.getResponse().getStatus());
 	}
 	
@@ -122,7 +124,34 @@ public class UserControllerTest {
 		assert(201 == mvcResult.getResponse().getStatus());
 	}
 	
-	// TODO add DELETE CRUD method check
+	// TODO more in-depth delete
+	@Test
+	public void deleteUser() throws Exception {
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567").header("Authorization", adminToken)).andDo(MockMvcResultHandlers.print()).andReturn();
+	}
+	
+	// TODO more in-depth delete
+	@Test
+	public void deleteFriend() throws Exception {
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567/friends-list/12345678901234567").header("Authorization", adminToken)).andDo(MockMvcResultHandlers.print()).andReturn();
+	}
+	
+	@Test
+	public void noLoginToken() throws Exception {
+		MvcResult mvcResult_UserList = mockMvc.perform(MockMvcRequestBuilders.get("/users")).andReturn();
+		assert(401 == mvcResult_UserList.getResponse().getStatus());
+		MvcResult mvcResult_User = mockMvc.perform(MockMvcRequestBuilders.get("/users/76561198089525491")).andReturn();
+		assert(401 == mvcResult_User.getResponse().getStatus());
+		MvcResult mvcResult_UpdateUser = mockMvc.perform(MockMvcRequestBuilders.patch("/users/76561198089525491").contentType(MediaType.APPLICATION_JSON).content("{}")).andReturn();
+		assert(401 == mvcResult_UpdateUser.getResponse().getStatus());
+		MvcResult mvcResult_DeleteUser = mockMvc.perform(MockMvcRequestBuilders.delete("/users/76561198089525491")).andReturn();
+		assert(401 == mvcResult_DeleteUser.getResponse().getStatus());
+		MvcResult mvcResult_GetFriends = mockMvc.perform(MockMvcRequestBuilders.get("/users/76561198089525491/friends-list")).andReturn();
+		assert(401 == mvcResult_GetFriends.getResponse().getStatus());
+		MvcResult mvcResult_AddFriends = mockMvc.perform(MockMvcRequestBuilders.post("/users/76561198089525491/friends-list/12345678901234567")).andReturn();
+		assert(401 == mvcResult_AddFriends.getResponse().getStatus());
+		
+	}
 	
 	private List<User> fakeUserList() {
 		List<User> userList = new ArrayList<>();

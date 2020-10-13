@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.TokenTest;
@@ -109,7 +110,22 @@ public class GameControllerTest {
 		assert(201 == mvcResult.getResponse().getStatus());
 	}
 	
-	// TODO add DELETE CRUD method check
+	@Test
+	public void deleteGame() throws Exception {
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/games/03").header("Authorization", adminToken)).andDo(MockMvcResultHandlers.print()).andReturn();
+
+	}
+	
+	@Test
+	public void noLoginToken() throws Exception {
+		MvcResult mvcResult_DeleteGame = mockMvc.perform(MockMvcRequestBuilders.delete("/games/9898")).andReturn();
+		assert(401 == mvcResult_DeleteGame.getResponse().getStatus());
+		MvcResult mvcResult_AddGame = mockMvc.perform(MockMvcRequestBuilders.post("/games/").contentType(MediaType.APPLICATION_JSON).content("{}")).andReturn();
+		assert(401 == mvcResult_AddGame.getResponse().getStatus());
+		MvcResult mvcResult_UpdateGame = mockMvc.perform(MockMvcRequestBuilders.patch("/users/9898").contentType(MediaType.APPLICATION_JSON).content("{}")).andReturn();
+		assert(401 == mvcResult_UpdateGame.getResponse().getStatus());
+		
+	}
 	
 	private List<Game> fakeGameList() {
 		List<Game> bufferGames = new ArrayList<>();
