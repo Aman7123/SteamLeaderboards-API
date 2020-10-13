@@ -39,9 +39,6 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	
 	@Autowired
 	GameRepository gameRepository;
-	
-	@Autowired
-	GameService gameService;
 
 	@Override
 	// TODO fix for user search 76561198079513535
@@ -306,6 +303,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 						long appid = Long.parseLong(appID);
 						Game newGameEntry = new Game(appid, name.get());
 						newGameEntry = gameRepository.save(newGameEntry);
+						// TODO remove this line below
 						System.out.println(newGameEntry.toString());
 					} else {
 						String steamGameInfo = "http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=" + apikey + "&appid=" + appID;
@@ -321,6 +319,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 						
 						Game newGame = new Game(Long.parseLong(appID), gameName);
 						newGame = gameRepository.save(newGame);
+						// TODO remove this line below
 						System.out.println(newGame.toString());
 					}
 				}
@@ -368,5 +367,9 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		steamOwnedGamesEndpoint = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=" + this.apikey;
 		steamProfileLevelEndpoint = "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + this.apikey;
 		steamProfileBadgeEndpoint = "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=" + this.apikey;
+	}
+	
+	public void setAPIKey(String key) {
+		this.apikey = key;
 	}
 }
