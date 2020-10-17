@@ -1,0 +1,654 @@
+openapi: 3.0.0
+info:
+  description: |
+    This API is a service that can allow a user of 
+    the game service Steam to create custom account leaderboards 
+    with your friends.
+  version: 1.0.0
+  title: LeaderboardsAPI
+  contact:
+    name: Aaron Renner
+    email: aaron@aaronrenner.com
+    url: aaronrenner.com
+
+# Documentation Categories
+tags:
+  - name: Users Accounts
+    description: Profile creation and self management
+  - name: Leaderboards
+    description: Steam profile data as a leaderboard
+  - name: Games Search
+    description: Search service for Steam games
+  - name: Login
+    description: Request a jwt token
+
+  
+paths:
+  /users:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users Accounts
+      summary: Retrieves a list of registered users
+      operationId: getUser
+      description: |
+        Display a list of all registered users on this site
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Users'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+        - Users Accounts
+      summary: Creates a user
+      operationId: addUser
+      description: |
+        Supply the necessary data to create an user record
+      requestBody:
+        description: |
+          The data used to create an account on the service
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users/{steamID64}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users Accounts
+      summary: Gets data on specific user
+      operationId: getUserByID
+      description: |
+        Returns all stored data on an user record
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Users'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users Accounts
+      summary: Update a specific users record
+      operationId: updateUser
+      description: |
+        Update a singular property of an individual user record
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+      requestBody:
+        description: |
+          To update a part or multiple parts of a user record
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users Accounts
+      summary: Delete an user record
+      operationId: deleteUser
+      description: |
+        Delete all data related to a specific user record
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users/{steamID64}/friends-List:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users Accounts
+      summary: Personal list for leaderboards
+      operationId: getUserLeaderboards
+      description: |
+        Returns the saved SteamIDs for a user
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/FriendList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users/{steamID64}/friends-List/{steamID64}:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users Accounts
+      summary: Add steamID to leaderboards list
+      operationId: addToUserLeaderboards
+      description: |
+        Add a friend to the user account to show when pulling from leaderboards endpoint
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users Accounts
+      summary: Delete steamID from leaderboards list
+      operationId: deleteFromUserLeaderboards
+      description: |
+        Delete the requested steamID from a users list
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /leaderboards/{steamID64}/profile:
+    get:
+      tags:
+        - Leaderboards
+      summary: Get Steam profile as a leaderboard
+      operationId: getLeaderboardsProfile
+      description: |
+        Retrieve Steam profile data as a JSON string, 
+        the data will be appended with friends data 
+        specified in users profile
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+        - in: query 
+          name: steamids
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          description: |
+            Optionally list one or more steamids whose 
+            data can be appended with the response
+          example: steamids=76561198089525490
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SteamProfile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /leaderboards/{steamID64}/statistics:
+    get:
+      tags:
+        - Leaderboards
+      summary: Get statistics for a Steam game
+      operationId: getLeaderboardsStatistics
+      description: |
+        Retrieve the statistic data for a Steam game in JSON format,
+        must use the games appID supplied by Steam.
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+        - $ref: '#/components/parameters/appID'
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/SteamStats'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /leaderboards/{steamID64}/achievements:
+    get:
+      tags:
+        - Leaderboards
+      summary: Get achievements for a Steam game
+      operationId: getLeaderboardsAchievements
+      description: |
+        Retrieve the achievements data for a Steam game in JSON format,
+        must use the games appID supplied by Steam.
+      parameters:
+        - $ref: '#/components/parameters/steamID64'
+        - $ref: '#/components/parameters/appID'
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/SteamAchievements'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /games:
+    get:
+      tags:
+        - Games Search
+      summary: Search for Steam appID
+      operationId: getGames
+      description: |
+        Search our database for Steam game data by specifying tags accosiated with the game
+      parameters:
+        - in: query
+          required: false
+          description: |
+            (Optional) This field can be supplied to sort the game return by the title
+          name: title
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/SteamGame'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Games Search
+      summary: Create a game entry
+      operationId: createGames
+      description: |
+        For situations where our database is missing a game entry
+      requestBody:
+        description: |
+          Game format for our systems
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SteamGame'
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /games/{appID}:
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Games Search
+      summary: Update a game
+      operationId: updateGames
+      description: |
+        Update a game on our database
+      parameters:
+        - $ref: '#/components/parameters/appID'
+      requestBody:
+        description: |
+          To update a games tite
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameTitle'
+      responses:
+        '200':
+          description: Operation Successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Games Search
+      summary: Delete a game
+      operationId: deleteGames
+      description: |
+        Delete a game on our database
+      parameters:
+        - $ref: '#/components/parameters/appID'
+      responses:
+        '200':
+          description: Operation Successful
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /login:
+    post:
+      tags:
+        - Login
+      summary: Get jwt token to login
+      operationId: getLogin
+      description: |
+        Login using username and password for a user
+        to access a jwt token for access to other endpoints
+      requestBody:
+        description: |
+          User to login
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  ##
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  ###
+  schemas:
+    # This is the layout for user data
+    Users:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "Captain Autismo"
+        steamID64:
+          $ref: '#/components/schemas/steamID64'
+        friendlist:
+          $ref: '#/components/schemas/FriendList'
+      required:
+        - username
+        - steamID64
+        - password
+    # This is the layout for the steamID
+    steamID64:
+      type: string
+      minLength: 17
+      maxLength: 17
+      example: "76561198089525490"
+    # This is the layout for a profiles custom leaderboards
+    FriendList:
+      type: object  
+      properties:
+        steamID64:
+          $ref: '#/components/schemas/steamID64'
+    # This is the layout for the appID
+    appID:
+      type: string
+      example: "289070"
+    # This is the layout for the return data for profiles in leaderboards
+    SteamProfile:
+      type: object
+      properties:
+        steamID64:
+          $ref: '#/components/schemas/steamID64'
+        personaname:
+          type: string
+          example: "Captain Autismo"
+        profileurl:
+          type: string
+          example: "https://steamcommunity.com/id/AaronWho/"
+        avatar:
+          type: string
+          example: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/cd/cd4c125db6763920106b5d21dde8b101136b8727.jpg"
+        level:
+          type: number
+          example: 17
+        lastlogoff:
+          type: number
+          example: 1595940992
+        timecreated:
+          type: number
+          example: 1366742341
+        recentlyPlayed_Count:
+          type: number
+          example: 2
+        recentlyPlayed_Playtime:
+          type: number
+          example: 650
+        gamesOwned_Count:
+          type: number
+          example: 190
+        totalPLaytime:
+          type: number
+          example: 19082
+        badge_count:
+          type: number
+          example: 12
+    # This is the layout for a Steam games data
+    SteamGame:
+      type: object
+      properties:
+        appID:
+          $ref: '#/components/schemas/appID'
+        gamename:
+          type: string
+          example: "Sid Meier's Civilization VI"
+    GameTitle:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Rust"
+    # This is the layout for a user login
+    UserLogin:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "Captain Autismo"
+        password:
+          type: string
+          example: "1234"
+    # This is the layout for a jwt token
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "token string"
+    # This is the layout for game stats
+    SteamStats:
+      type: object
+      properties:
+        steamID64:
+          $ref: '#/components/schemas/steamID64'
+        gamename:
+          type: string 
+          example: "Sid Meier's Civilization VI"
+        stats:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "arrow_hit_player"
+              value:
+                type: number
+                example: 17
+    # This is the layout for game achievements
+    SteamAchievements:
+      type: object
+      properties:
+        steamID64:
+          $ref: '#/components/schemas/steamID64'
+        gamename:
+          type: string 
+          example: "Sid Meier's Civilization VI"
+        stats:
+          type: array
+          items:
+            type: object
+            properties:
+              apiname:
+                type: string
+                example: "COLLECT_100_WOOD"
+              achieved:
+                type: boolean
+                example: 1
+              unlocktime:
+                type: number
+                example: 1594084227
+    # This is the return body for error logs
+    Logs:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        queryID:
+          type: number
+          example: 1
+        response_data:
+          type: string
+          example: "200"
+        time:
+          type: string
+          example: "1594084227"
+
+  ###
+  parameters:
+    # Layout for the steamID parameter in URL path
+    steamID64:
+      in: path
+      name: steamID64
+      required: true
+      description: |
+        The steamID64 of the user profile
+      schema:
+        $ref: '#/components/schemas/steamID64'
+    # Layout for appID value
+    appID:
+      in: query
+      name: appID
+      required: true
+      description: |
+        The appID is a unique value assigned to every game in the Steam store
+      schema:
+        $ref: '#/components/schemas/appID'
+
+  ###
+  responses:
+    # 200
+    Success:
+      description: Operation Successful
+    # 201
+    Created:
+      description: Creation Successful
+    # 400
+    BadRequest:
+      description: Missing "username" and "password" in body
+    # 401
+    Unauthorized:
+      description: Missing JWT token, POST \"/users\" or \"/login\" first
+    # 404
+    NotFound:
+      description: Resouce cannot be found or does not exist
+    # 409
+    Conflict:
+      description: If this is returned from a post then the resource already exists
+    # 500
+    ServerError:
+      description: The server is having difficulties creating the required data, if the problem persists contact web admin
