@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.Game;
@@ -31,8 +32,8 @@ public class LeaderboardsServiceTest {
 	private User fakeUser;
 	private Game fakeGame;
 	
-	// TODO figure out how to hide this
-	private String apikey = "E7F6470D0BAFE99CED3362CB2DB5F25B";
+	@Value("${com.aaronrenner.apikey}")
+	private String apikey;
 	
 	@BeforeEach
 	public void setUp() {
