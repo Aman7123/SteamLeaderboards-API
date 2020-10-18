@@ -26,6 +26,9 @@ public class UserServiceIMPL implements UserService {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	
+	// This value controls how long the password should be in all cases
+	private final int PASSWORD_MIN_LENGTH = 4;
+	
 	
 	@Override
 	public List<User> getUserList() {
@@ -72,23 +75,45 @@ public class UserServiceIMPL implements UserService {
 	@Override
 	public User updateUser(String steamID64, User updateUser) {
 		User storedUserModel = getUser(steamID64);
-		if(updateUser.getUsername() != null || updateUser.getPassword() != null) {
+		// If user model is not null
+		if(updateUser != null) {
+			// If they include an update for user name
 			if(updateUser.getUsername() != null) {
-				Optional<User> checkIfUserExists = userRepository.findByUsername(updateUser.getUsername());
-				if(steamID64.equals(checkIfUserExists.get().getSteamID64())) {
-					storedUserModel.setUsername(updateUser.getUsername());				
+				if(!userRepository.existsByUsername(updateUser.getUsername()) || (storedUserModel.getUsername().equals(updateUser.getUsername()))) {
+					storedUserModel.setUsername(updateUser.getUsername());	
 				} else {
-					throw new BadRequestError("That username is already in use");
+					throw new BadRequestError("That username is in use");
 				}
 			}
+			// If they include update for password
 			if(updateUser.getPassword() != null) {
-				// Update the encoded password
-				String encodedPassword = passwordEncoder.encodePassword(updateUser.getPassword());
-				storedUserModel.setPassword(encodedPassword);
+				if(updateUser.getPassword().length() >= PASSWORD_MIN_LENGTH) {
+					// Update the encoded password
+					String encodedPassword = passwordEncoder.encodePassword(updateUser.getPassword());
+					storedUserModel.setPassword(encodedPassword);		
+				} else {
+					throw new BadRequestError(String.format("Password should be longer than: %d", PASSWORD_MIN_LENGTH));
+				}
+
+			}
+			// If they include update for steamID64
+			if(updateUser.getSteamID64() != null) {
+				// Make sure steamID is of proper length
+				if(checkSteamID(updateUser.getSteamID64())) {
+					// Then make sure not being used
+					if(!userRepository.existsBySteamID64(updateUser.getSteamID64()) || (storedUserModel.getSteamID64().equals(updateUser.getSteamID64()))) {
+						// Then update
+						storedUserModel.setSteamID64(updateUser.getSteamID64());
+					} else {
+						throw new BadRequestError("That steamID is already in use");
+					}	
+				} else {
+					throw new BadRequestError("The steamID supplied must be min&max 17 digits, check the entry and try again");
+				}
+
 			}	
-		
 		} else {
-			throw new BadRequestError("Update the \"username\" and/or \"password\"");
+			throw new BadRequestError("Update the \"username\", \"password\", or \"steamID64\" fields");
 		}
 
 		return userRepository.save(storedUserModel);

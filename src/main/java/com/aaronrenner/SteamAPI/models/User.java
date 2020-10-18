@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name="user")
-@JsonIgnoreProperties({"id", "role", "password"})
+@JsonIgnoreProperties({"id", "role"})
 
 /**
  * This class represents the data structure of a user object in code and in the database, this class creates its own data tables
