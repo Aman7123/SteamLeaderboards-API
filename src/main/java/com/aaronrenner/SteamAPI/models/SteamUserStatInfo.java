@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import lombok.Data;
 
 @Data
+/**
+ * 
+ * @author aaron renner
+ * @version 1.0
+ *
+ */
 public class SteamUserStatInfo {
-	
+
 	private String SteamID64;
 	private String gameName;
 	private ArrayList<SteamStatLayout> stats = new ArrayList<>();;

@@ -8,12 +8,13 @@ import lombok.Data;
 
 /**
  * This model represents the layout for a simple achievement in the steam endpoint
- * @author aaronrenner
+ * @author aaron renner
+ * @version 1.0
  *
  */
 public class SteamAchievementLayout {
 
 	private String name;
 	private boolean achieved;
-	
+
 }

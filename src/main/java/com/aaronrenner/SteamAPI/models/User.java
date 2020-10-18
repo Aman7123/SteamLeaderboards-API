@@ -13,7 +13,8 @@ import lombok.Data;
 /**
  * This class represents the data structure of a user object in code and in the database, this class creates its own data tables
  * 
- * @author aaronrenner
+ * @author aaron renner
+ * @since 1.0
  *
  */
 
@@ -26,8 +27,8 @@ public class User {
 	private String steamID64;
 	private String password;
 	private String role;
-	
+
 	@OneToMany()
 	private List<FriendID> friendList = new ArrayList<>();
-	
+
 }

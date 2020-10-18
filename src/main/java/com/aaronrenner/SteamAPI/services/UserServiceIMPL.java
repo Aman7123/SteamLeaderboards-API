@@ -15,21 +15,27 @@ import com.aaronrenner.SteamAPI.repositories.UserRepository;
 import com.aaronrenner.SteamAPI.security.PasswordEncoder;
 
 @Service
+/**
+ * 
+ * @author aaron renner
+ * @version 1.0
+ *
+ */
 public class UserServiceIMPL implements UserService {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	FriendRepository friendRepository;
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
+
 	// This value controls how long the password should be in all cases
 	private final int PASSWORD_MIN_LENGTH = 4;
-	
-	
+
+
 	@Override
 	public List<User> getUserList() {
 		return userRepository.findAll();
@@ -49,7 +55,7 @@ public class UserServiceIMPL implements UserService {
 					// Encode password
 					String encodePassword = passwordEncoder.encodePassword(newUser.getPassword());
 					newUser.setPassword(encodePassword);
-					
+
 					return userRepository.save(newUser);
 				} else {
 					throw new BadRequestError("The steamID was not of valid format");
@@ -123,7 +129,7 @@ public class UserServiceIMPL implements UserService {
 	public void deleteUser(String steamID64) {
 		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
-		
+
 		this.userRepository.delete(userSearch);			
 	}
 
@@ -131,11 +137,11 @@ public class UserServiceIMPL implements UserService {
 	public List<FriendID> getFriend(String steamID64) {
 		// User is checked for existence by line 
 		User userSearch = getUser(steamID64);
-		
+
 		return userSearch.getFriendList();
 
 	}
-	
+
 	@Override
 	// TODO fix
 	public FriendID createFriend(String steamID64, String friendSteamID64) {
@@ -143,7 +149,7 @@ public class UserServiceIMPL implements UserService {
 		if(steamID64.equals(friendSteamID64)) {
 			throw new BadRequestError("You want to be friends with yourself? Weirdo.");
 		}
-		
+
 		// Check format of new friend entry
 		if(!checkSteamID(friendSteamID64)) {
 			throw new BadRequestError("Check the format of the friend steamID");
@@ -153,7 +159,7 @@ public class UserServiceIMPL implements UserService {
 
 		FriendID newFriend = new FriendID();
 		newFriend.setSteamID64(friendSteamID64);
-		
+
 		//Check before continuing
 		for(FriendID fID : userSearch.getFriendList()) {
 			if(fID.getSteamID64().equals(friendSteamID64)) {
@@ -178,7 +184,7 @@ public class UserServiceIMPL implements UserService {
 			if(fID.getSteamID64().equals(friendSteamID64)) {
 				friendExist = true;
 				userFriend = fID;
-				
+
 			}
 		}
 		if(friendExist) {
@@ -187,7 +193,7 @@ public class UserServiceIMPL implements UserService {
 		} else {
 			throw new FriendNotFound(steamID64, friendSteamID64);
 		}
-		
+
 	}
 
 	private boolean checkSteamID(String steamID64) {

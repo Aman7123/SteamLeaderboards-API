@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice
 public class FriendExistsAdvice  {
-	
+
 	@ResponseBody
 	@ExceptionHandler(FriendExists.class)
 	@ResponseStatus(HttpStatus.CONFLICT)

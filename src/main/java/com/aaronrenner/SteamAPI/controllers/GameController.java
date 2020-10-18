@@ -13,13 +13,13 @@ import com.aaronrenner.SteamAPI.services.LoginService;
 
 @RestController
 public class GameController {
-	
+
 	final private String GAMEURL = "/games";
 	final private String SELECTGAMEURL = GAMEURL + "/{appID}";
-	
+
 	@Autowired
 	private GameService gameService;
-	
+
 	@Autowired
 	private LoginService loginService;
 
@@ -27,17 +27,17 @@ public class GameController {
 	@GetMapping(GAMEURL)
 	public List<Game> getGameList(@RequestParam(value = "title") Optional<String> gameTitle) {
 		if(gameTitle.isPresent()) {
-		 return this.gameService.getGameByTitle(gameTitle.get());
+			return this.gameService.getGameByTitle(gameTitle.get());
 		}
-		
+
 		return this.gameService.getGameList();
 	}
-	
+
 	@GetMapping(SELECTGAMEURL)
 	public Optional<Game> getGameByID(@PathVariable long appID) {
 		return this.gameService.getGameByID(appID);
 	}
-	
+
 	@PatchMapping(SELECTGAMEURL)
 	@ResponseStatus(value= HttpStatus.ACCEPTED)
 	public void updateGame(@RequestHeader("Authorization") Optional<String> oAuthToken, @PathVariable long appID, @RequestBody Game gameModel) {
@@ -54,7 +54,7 @@ public class GameController {
 		}
 
 	}
-	
+
 	@PostMapping(GAMEURL)
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public void createGame(@RequestHeader("Authorization") Optional<String> oAuthToken, @RequestBody Game gameEntry) {
@@ -71,7 +71,7 @@ public class GameController {
 		}
 
 	}
-	
+
 	@DeleteMapping(SELECTGAMEURL)
 	public void deleteGame(@RequestHeader("Authorization") Optional<String> oAuthToken, @PathVariable long appID) {
 		if(oAuthToken.isPresent()) { // if authorization
@@ -87,7 +87,7 @@ public class GameController {
 		}
 
 	}
-	
+
 	private User getUserFromAuth(String bearerPass) {
 		String[] parseToken = bearerPass.split(" "); // split [0]="bearer", [1]="xxx"
 		if(parseToken[0].equals("Bearer")) { // if Bearer is Bearer
@@ -97,5 +97,5 @@ public class GameController {
 		throw new AuthorizationError("JWT token bad format, check header");
 
 	}
-	
+
 }

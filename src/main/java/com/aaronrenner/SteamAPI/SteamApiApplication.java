@@ -30,10 +30,10 @@ public class SteamApiApplication {
 		/* Maximum amount of memory the JVM will attempt to use */
 		System.out.println("Maximum memory (mb): " + 
 				(maxMemory == Long.MAX_VALUE ? "no limit" : maxMemory/1000000));
-		  
+
 		SpringApplication.run(SteamApiApplication.class, args);
 	}
-	
+
 	/**
 	 * This method is part of creating a faster means of executing deeper code.
 	 * {@link https://spring.io/guides/gs/async-method/}

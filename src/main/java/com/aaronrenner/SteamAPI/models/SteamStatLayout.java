@@ -8,7 +8,8 @@ import lombok.Data;
 
 /**
  * This is the layout for what a statistic looks like inside of the array returned by Steam
- * @author aaronrenner
+ * @author aaron renner
+ * @since 1.0
  *
  */
 public class SteamStatLayout {

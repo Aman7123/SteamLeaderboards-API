@@ -12,12 +12,12 @@ import com.aaronrenner.SteamAPI.services.LoginService;
 
 @RestController
 public class LoginController {
-	
+
 	final private String LOGINURL = "/login";
-	
+
 	@Autowired
 	private LoginService loginService;
-	
+
 	@PostMapping(LOGINURL)
 	@ResponseStatus(value= HttpStatus.OK)
 	public Token createLoginToken(@RequestBody Optional<User> newLoginUser) {

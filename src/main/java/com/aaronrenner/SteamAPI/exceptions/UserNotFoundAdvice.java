@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice
 public class UserNotFoundAdvice  {
-	
+
 	@ResponseBody
 	@ExceptionHandler(UserNotFound.class)
 	@ResponseStatus(HttpStatus.CONFLICT)

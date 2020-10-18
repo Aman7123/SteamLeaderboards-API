@@ -10,15 +10,15 @@ import com.aaronrenner.SteamAPI.repositories.GameRepository;
 
 @Service
 public class GameServiceIMPL implements GameService {
-	
+
 	@Autowired
 	GameRepository gameRepository;
-	
+
 	@Override
 	public List<Game> getGameList() {
 		return gameRepository.findAll();
 	}
-	
+
 	@Override
 	public List<Game> getGameByTitle(String gameTitle) {
 		return gameRepository.findByTitleContains(gameTitle);
@@ -33,7 +33,7 @@ public class GameServiceIMPL implements GameService {
 			throw new GameNotFound(GameAppID);
 		}
 	}
-	
+
 	@Override
 	public Game updateGame(long appID, Game updateGame) {
 		Game storedGameModel = getGameByID(appID).get();
@@ -56,7 +56,7 @@ public class GameServiceIMPL implements GameService {
 	@Override
 	public void deleteGame(long GameAppID) {
 		Optional<Game> checkGame = gameRepository.findById(GameAppID);
-		
+
 		if(checkGame.isPresent()) {
 			this.gameRepository.deleteById(GameAppID);
 		} else {

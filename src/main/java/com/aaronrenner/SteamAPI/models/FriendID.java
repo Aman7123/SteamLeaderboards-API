@@ -12,7 +12,8 @@ import lombok.Data;
 /**
  * This model represents the database and common referenced data model throughout this project. It is simply the two data variables below.
  * 
- * @author aaronrenner
+ * @author aaron renner
+ * @version 1.0
  *
  */
 

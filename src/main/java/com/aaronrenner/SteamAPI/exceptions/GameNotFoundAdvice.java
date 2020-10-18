@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice
 public class GameNotFoundAdvice  {
-	
+
 	@ResponseBody
 	@ExceptionHandler(GameNotFound.class)
 	@ResponseStatus(HttpStatus.CONFLICT)

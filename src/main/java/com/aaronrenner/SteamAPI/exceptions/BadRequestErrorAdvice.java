@@ -6,7 +6,7 @@ import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 @ControllerAdvice
 public class BadRequestErrorAdvice  {
-	
+
 	@ResponseBody
 	@ExceptionHandler(BadRequestError.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

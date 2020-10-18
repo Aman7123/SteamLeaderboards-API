@@ -5,6 +5,12 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * 
+ * @author aaron renner
+ * @version 1.0
+ *
+ */
 public class SteamProfile {
 
 	private String steamid;

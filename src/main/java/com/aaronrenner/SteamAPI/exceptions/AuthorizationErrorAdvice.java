@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice
 public class AuthorizationErrorAdvice  {
-	
+
 	@ResponseBody
 	@ExceptionHandler(AuthorizationError.class)
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)

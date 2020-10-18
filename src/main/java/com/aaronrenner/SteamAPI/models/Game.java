@@ -12,19 +12,20 @@ import lombok.ToString;
 /**
  * This model represents the database for the game data I store
  * 
- * @author aaronrenner
+ * @author aaron renner
+ * @version 1.0
  *
  */
 public class Game {
-	
+
 	@Id
 	private long id;
 	private String title;
 
 	public Game() {
-		
+
 	}
-	
+
 	public Game(long appid, String name) {
 		this.id = appid;
 		this.title=name;
