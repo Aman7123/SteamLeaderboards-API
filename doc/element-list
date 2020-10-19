@@ -1,0 +1,8 @@
+com.aaronrenner.SteamAPI
+com.aaronrenner.SteamAPI.configurations
+com.aaronrenner.SteamAPI.controllers
+com.aaronrenner.SteamAPI.exceptions
+com.aaronrenner.SteamAPI.models
+com.aaronrenner.SteamAPI.repositories
+com.aaronrenner.SteamAPI.security
+com.aaronrenner.SteamAPI.services

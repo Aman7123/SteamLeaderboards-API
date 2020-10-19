@@ -3,8 +3,8 @@ package com.aaronrenner.SteamAPI.services;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,8 @@ import com.aaronrenner.SteamAPI.models.SteamUserStatInfo;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
 import com.aaronrenner.SteamAPI.repositories.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.*;
 import net.minidev.json.parser.*;
@@ -53,6 +55,8 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	private List<Game> masterGameList = new ArrayList<>();
 	private Thread gameSavingThread = new Thread();
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(LeaderboardServiceIMPL.class);
+
 	@Override
 	public List<SteamProfile> getSteamProfile(String SteamID64) {
 		// This code line must exist for jUnit tests, there are cases that the key would not get populated
@@ -76,18 +80,59 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 
 		// Loop player search
 		for(int x=0; x<arraySize; x++) {
-			CompletableFuture<SteamProfile> newProfile;
+			int iteratorNumber = x;
+			/**
+			 * TODO figure out how to name the threads to keep them in order :D
+			 * 
+			 * This thread will call an @Async thread to create a new SteamProfile for a new loop
+			 * of the for loop around line 82.
+			 * 
+			 */
+			Thread newSteamProfile = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						CompletableFuture<SteamProfile> newProfile = completeSteamProfile(playerData.get(iteratorNumber).toString());
+						
+						while(true) {
+							if(newProfile.isDone()) {
+								LOGGER.info("Finished mapping a user and added to master");
+								profile.add(newProfile.join());
+								break;
+							}
+						}
+						
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			});
+			newSteamProfile.start();
+		}
+		
+		/**
+		 * After all of the treads have been created we wait for them all to finish before moving on.
+		 */
+		while(true) {
+			if(profile.size() == arraySize) {
+				LOGGER.info("Finally done and returning");
+				break;
+			}
+			
+			/**
+			 * This Thread.sleep(1000) is necessary to allow the main thread line to take a chill pill real quick and catch up.
+			 * If you remove this you will no longer get responses on the end point.
+			 */
 			try {
-				newProfile = completeSteamProfile(playerData.get(x).toString());
-				profile.add(newProfile.get());
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
 			}
 		}
-
+		
 		saveGames(this.masterGameList);
 		return profile;
 	}
@@ -165,6 +210,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	 * @throws InterruptedException
 	 * @since 2.5
 	 */
+	@Async
 	private CompletableFuture<SteamProfile> completeSteamProfile(String playerData) throws InterruptedException {
 		SteamProfile profile = null;
 		JSONObject recentGames = null;
@@ -183,16 +229,19 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		JSONObject bufferJSONObject = null;
 		String bufferString = null;
 		long bufferLong = 0;
+		
+		final long start = System.currentTimeMillis();
 
 		try {
 			profile = objectMapper.readValue(playerData, SteamProfile.class);
+			
 			try {
 				recentGames = getSteamEndpoint(this.steamRecentlyPlayedEndpoint, profile.getSteamid());
 				ownedGames = getSteamEndpoint(this.steamOwnedGamesEndpoint, profile.getSteamid());
 				profileLevel = getSteamEndpoint(this.steamProfileLevelEndpoint, profile.getSteamid());
 				badgeList = (JSONArray) getSteamEndpoint(this.steamProfileBadgeEndpoint, profile.getSteamid()).get("badges");
 			} catch (Exception e) {
-				System.out.println("An enpoint is returning null");
+				LOGGER.error("An endpoint is returning null");
 			}
 			// Before diving into the "games" array (below) we must gather data from the parent object
 			try {
@@ -200,7 +249,6 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				profile.setRecentlyPlayed_Count(bufferLong);
 			} catch (Exception e) {
 				profile.setRecentlyPlayed_Count(0);
-				e.printStackTrace();
 			}
 
 			try {
@@ -208,7 +256,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				profile.setGamesOwned_Count(bufferLong);
 			} catch(Exception e) {
 				profile.setGamesOwned_Count(0);
-				System.out.println("Steam is not returning users owned games again");
+				LOGGER.error("Steam is returning null SteamProfile for owned games endpoint - completeSteamProfile()");
 			}
 
 			try {
@@ -229,6 +277,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 			try {
 				recentlyPlayedGameList = (JSONArray) recentGames.get("games");
 			} catch(Exception e) {
+				// TODO complete
 			}
 
 			try {
@@ -284,11 +333,11 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 			}
 			profile.setTotalPlaytime(foreverPlaytime);
 
-
 		} catch(Exception jMapError) {
 			jMapError.printStackTrace();
 		}
-
+		
+		LOGGER.info("Elapsed time: {}", (System.currentTimeMillis() - start));
 		return CompletableFuture.completedFuture(profile);
 	}
 
@@ -380,7 +429,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	 * @param steamID64 user from Steam
 	 * @return master user list
 	 */
-	private List<FriendID> compileUserSearch(String steamID64) {
+	public List<FriendID> compileUserSearch(String steamID64) {
 		//Check if user has friends (haha probably not)
 		Optional<List<FriendID>> oLFID = getUserFriends(steamID64);
 
@@ -418,8 +467,8 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 				try {
 					for(Game game : gameRecordList) {
 						if(!gameRepository.existsById(game.getId())) {
-							System.out.println("New game saving in DB:");
-							System.out.println(game);
+							LOGGER.info("Saving a new game to DB");
+							LOGGER.info(game.toString());
 
 							gameRepository.save(game);
 						}
