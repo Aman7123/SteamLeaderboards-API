@@ -64,7 +64,7 @@ public class UserServiceIMPL implements UserService {
 				throw new BadRequestError("Missing or incomplete \"username\", \"steamID64\" and \"password\" fields");
 			}
 		}
-		throw new UserExists(newUser.getSteamID64());
+		throw new BadRequestError("Missing or incomplete \"username\", \"steamID64\" and \"password\" fields");
 	}
 
 	@Override
