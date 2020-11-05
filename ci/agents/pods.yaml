@@ -13,7 +13,7 @@ spec:
       - name: dind-storage
         mountPath: /var/lib/docker
   - name: maven
-    image: maven:3-alpine
+    image: maven:3-openjdk-11
     tty: true 
     command: ['cat']
   - name: postman
