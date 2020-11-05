@@ -1,5 +1,5 @@
 # Use the official image as a parent image.
-FROM openjdk:11
+FROM maven:3-openjdk-11
 
 # Set the working directory.
 WORKDIR /usr/
