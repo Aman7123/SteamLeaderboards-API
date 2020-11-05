@@ -1,0 +1,22 @@
+pipeline {
+    agent {
+        kubernetes {
+            yamlFile ('ci/agents/pods.yaml')
+        }
+    }
+
+    stages {
+        stage('Build jar files') {
+            steps {
+                container('maven') {
+                    script {
+                        sh '''
+                            mvn -B -DskipTests clean package
+                        '''
+                    }
+                } // container
+            } // steps
+        } // stage
+
+    } // stages
+} // pipeline
