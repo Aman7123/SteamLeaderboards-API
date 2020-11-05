@@ -11,15 +11,29 @@
 			"item": [
 				{
 					"name": "getGames",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eaf00161-03f1-4442-9b8e-e23c3c5a7b3a",
+								"exec": [
+									"pm.test(\"Verify status code 200\", function() {",
+									"    pm.response.to.have.status(200);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/",
+							"raw": "{{baseURL}}:{{basePort}}/games/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								""
@@ -30,15 +44,29 @@
 				},
 				{
 					"name": "getGameByTitle",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "90563aef-6167-4dad-b930-aded60c20f13",
+								"exec": [
+									"pm.test(\"Verify status code 200\", function() {",
+									"    pm.response.to.have.status(200);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/?title=Rust",
+							"raw": "{{baseURL}}:{{basePort}}/games/?title=Rust",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								""
@@ -55,15 +83,29 @@
 				},
 				{
 					"name": "getGameByID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b4d2400f-8c17-4517-8033-e54ad6c7db61",
+								"exec": [
+									"pm.test(\"Verify status code 200\", function() {",
+									"    pm.response.to.have.status(200);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -74,15 +116,29 @@
 				},
 				{
 					"name": "deleteGame",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "be818487-5e7c-47ac-a7a1-ca8b502d8ec4",
+								"exec": [
+									"pm.test(\"Verify status code 200\", function() {",
+									"    pm.response.to.have.status(200);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -93,6 +149,20 @@
 				},
 				{
 					"name": "updateGame(forError)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4f3b03b6-487b-4e54-9416-85660b5ca7f0",
+								"exec": [
+									"pm.test(\"Verify status code 409\", function() {",
+									"    pm.response.to.have.status(409);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [],
@@ -106,11 +176,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -121,15 +191,29 @@
 				},
 				{
 					"name": "deleteGame(forError)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "76024259-cc71-4b0e-905e-b37d77218be3",
+								"exec": [
+									"pm.test(\"Verify status code 409\", function() {",
+									"    pm.response.to.have.status(409);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -140,15 +224,39 @@
 				},
 				{
 					"name": "getGameByID(forError)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4dc396fb-b9a1-45a2-b843-56257f99c6ae",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "77efb11a-ec1b-4eaf-a7f3-55fd938a2cac",
+								"exec": [
+									"pm.test(\"Verify status code 409\", function() {",
+									"    pm.response.to.have.status(409);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -159,6 +267,20 @@
 				},
 				{
 					"name": "createGame",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b2cbf38a-dbfc-4201-8fc2-885452bc151f",
+								"exec": [
+									"pm.test(\"Verify status code 201\", function() {",
+									"    pm.response.to.have.status(201);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -172,11 +294,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/games/",
+							"raw": "{{baseURL}}:{{basePort}}/games/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								""
@@ -187,6 +309,30 @@
 				},
 				{
 					"name": "createGame(forError)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "69c28d4b-7c0d-4551-b8e9-15735be084d0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c6272b2-f11f-44cf-ab44-5b8b8ccb7217",
+								"exec": [
+									"pm.test(\"Verify status code 409\", function() {",
+									"    pm.response.to.have.status(409);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -200,11 +346,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/games/",
+							"raw": "{{baseURL}}:{{basePort}}/games/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								""
@@ -215,6 +361,20 @@
 				},
 				{
 					"name": "updateGame",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cbc5b96b-557e-43fc-a1b9-ee60c8b958c8",
+								"exec": [
+									"pm.test(\"Verify status code 202\", function() {",
+									"    pm.response.to.have.status(202);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [],
@@ -228,11 +388,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -306,15 +466,27 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"test_user\",\n    \"password\": \"1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "localhost:8080/users/",
+							"raw": "{{baseURL}}:{{basePort}}/users/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								""
@@ -341,11 +513,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491"
@@ -372,11 +544,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/7656119808952549",
+							"raw": "{{baseURL}}:{{basePort}}/users/7656119808952549",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"7656119808952549"
@@ -403,15 +575,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist"
+								"friends-list"
 							]
 						}
 					},
@@ -435,15 +607,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/7656119808952549/friendslist",
+							"raw": "{{baseURL}}:{{basePort}}/users/7656119808952549/friends-list",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"7656119808952549",
-								"friendslist"
+								"friends-list"
 							]
 						}
 					},
@@ -467,15 +639,15 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist/76561198079633345",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list/76561198079633345",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist",
+								"friends-list",
 								"76561198079633345"
 							]
 						}
@@ -500,15 +672,15 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist/76561198079633345",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list/76561198079633345",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist",
+								"friends-list",
 								"76561198079633345"
 							]
 						}
@@ -533,15 +705,15 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist/76561198079633345",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list/76561198079633345",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist",
+								"friends-list",
 								"76561198079633345"
 							]
 						}
@@ -566,15 +738,15 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist/76561198089525491",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist",
+								"friends-list",
 								"76561198089525491"
 							]
 						}
@@ -599,15 +771,15 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist/7656119808952549",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list/7656119808952549",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist",
+								"friends-list",
 								"7656119808952549"
 							]
 						}
@@ -632,15 +804,15 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist/76561198079633345",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list/76561198079633345",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist",
+								"friends-list",
 								"76561198079633345"
 							]
 						}
@@ -665,11 +837,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491"
@@ -693,11 +865,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/",
+							"raw": "{{baseURL}}:{{basePort}}/users/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								""
@@ -721,11 +893,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/",
+							"raw": "{{baseURL}}:{{basePort}}/users/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								""
@@ -749,11 +921,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/",
+							"raw": "{{baseURL}}:{{basePort}}/users/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								""
@@ -777,11 +949,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/",
+							"raw": "{{baseURL}}:{{basePort}}/users/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								""
@@ -817,11 +989,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491"
@@ -857,11 +1029,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491"
@@ -889,7 +1061,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\":\"Aaron\",\n    \"password\":\"1234\"\n}",
+							"raw": "{\n    \"password\":\"1234\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -897,11 +1069,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491"
@@ -919,7 +1091,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"const body = {",
-							"    \"username\" : \"cBizz\",",
+							"    \"username\" : \"test_user\",",
 							"    \"password\" : \"1234\"",
 							"}",
 							"const tokenRequest = {",
@@ -979,11 +1151,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/",
+							"raw": "{{baseURL}}:{{basePort}}/users/",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								""
@@ -1010,14 +1182,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/7656119808952549",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
-								"7656119808952549"
+								"76561198089525491"
 							]
 						}
 					},
@@ -1050,54 +1222,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/7656119808952549",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
-								"7656119808952549"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "deleteUser",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "dbd06308-b94f-4bb8-9691-2a4384033110",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\":\"Aaron\",\n    \"password\":\"1234\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/users/7656119808952549",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"users",
-								"7656119808952549"
+								"76561198089525491"
 							]
 						}
 					},
@@ -1133,15 +1265,15 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/7656119808952549/friendslist",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198440364879/friends-list",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
-								"7656119808952549",
-								"friendslist"
+								"76561198440364879",
+								"friends-list"
 							]
 						}
 					},
@@ -1174,16 +1306,16 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/7656119808952549/friendslist/7656119808952549",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198440364879/friends-list/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
-								"7656119808952549",
-								"friendslist",
-								"7656119808952549"
+								"76561198440364879",
+								"friends-list",
+								"76561198089525491"
 							]
 						}
 					},
@@ -1216,16 +1348,16 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/users/7656119808952549/friendslist/7656119808952549",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198440364879/friends-list/76561198089525491",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
-								"7656119808952549",
-								"friendslist",
-								"7656119808952549"
+								"76561198440364879",
+								"friends-list",
+								"76561198089525491"
 							]
 						}
 					},
@@ -1288,11 +1420,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -1319,15 +1451,15 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/users/76561198089525491/friendslist/76561198079633345",
+							"raw": "{{baseURL}}:{{basePort}}/users/76561198089525491/friends-list/76561198079633345",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users",
 								"76561198089525491",
-								"friendslist",
+								"friends-list",
 								"76561198079633345"
 							]
 						}
@@ -1340,11 +1472,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/leaderboards/76561198089525491/profiles",
+							"raw": "{{baseURL}}:{{basePort}}/leaderboards/76561198089525491/profiles",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"leaderboards",
 								"76561198089525491",
@@ -1360,11 +1492,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -1379,11 +1511,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/leaderboards/76561198089525491/statistics/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/leaderboards/76561198089525491/statistics/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"leaderboards",
 								"76561198089525491",
@@ -1401,11 +1533,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -1420,11 +1552,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/leaderboards/76561198089525491/statistics/games/2",
+							"raw": "{{baseURL}}:{{basePort}}/leaderboards/76561198089525491/statistics/games/2",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"leaderboards",
 								"76561198089525491",
@@ -1442,11 +1574,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"games",
 								"252490"
@@ -1461,11 +1593,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/leaderboards/76561198089525491/achievements/games/252490",
+							"raw": "{{baseURL}}:{{basePort}}/leaderboards/76561198089525491/achievements/games/252490",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"leaderboards",
 								"76561198089525491",
@@ -1543,11 +1675,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/login",
+							"raw": "{{baseURL}}:{{basePort}}/login",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"login"
 							]
@@ -1570,11 +1702,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/login",
+							"raw": "{{baseURL}}:{{basePort}}/login",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"login"
 							]
@@ -1594,11 +1726,11 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/users",
+							"raw": "{{baseURL}}:{{basePort}}/users",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users"
 							]
@@ -1618,11 +1750,11 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/users",
+							"raw": "{{baseURL}}:{{basePort}}/users",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8080",
+							"port": "{{basePort}}",
 							"path": [
 								"users"
 							]
@@ -1654,6 +1786,40 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "aea28d58-1fac-4885-9e38-ae4d096b37b1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2219c259-9491-4b5e-b663-c1e3ec6d42de",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "591bd2b1-bbf7-4d27-a585-a8191519d681",
+			"key": "baseURL",
+			"value": "localhost"
+		},
+		{
+			"id": "1b5678fa-60c2-46df-9906-759c59d5de29",
+			"key": "basePort",
+			"value": "8080"
 		}
 	],
 	"protocolProfileBehavior": {}
