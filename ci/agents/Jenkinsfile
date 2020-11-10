@@ -143,6 +143,14 @@ pipeline {
                                     reportFiles: 'index.html',
                                     reportName: "Jmeter report"
                                 ])
+                                publishHTML (target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'resources/',
+                                    reportFiles: 'jmeter.log',
+                                    reportName: "Jmeter log"
+                                ])
                             } //script
                         } //cleanup
                     } //post

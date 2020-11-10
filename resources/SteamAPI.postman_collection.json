@@ -1415,25 +1415,6 @@
 			"name": "leaderboardsEndpoint",
 			"item": [
 				{
-					"name": "deleteGame Rust",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}:{{basePort}}/games/252490",
-							"host": [
-								"{{baseURL}}"
-							],
-							"port": "{{basePort}}",
-							"path": [
-								"games",
-								"252490"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "addAaronFriend",
 					"event": [
 						{
@@ -1487,25 +1468,6 @@
 					"response": []
 				},
 				{
-					"name": "deleteGame Rust (again)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}:{{basePort}}/games/252490",
-							"host": [
-								"{{baseURL}}"
-							],
-							"port": "{{basePort}}",
-							"path": [
-								"games",
-								"252490"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "getSteamGameStats #1",
 					"request": {
 						"method": "GET",
@@ -1520,25 +1482,6 @@
 								"leaderboards",
 								"76561198089525491",
 								"statistics",
-								"games",
-								"252490"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "deleteGame Rust (again) Copy",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}:{{basePort}}/games/252490",
-							"host": [
-								"{{baseURL}}"
-							],
-							"port": "{{basePort}}",
-							"path": [
 								"games",
 								"252490"
 							]
@@ -1563,25 +1506,6 @@
 								"statistics",
 								"games",
 								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "deleteGame Rust (again) Copy 2",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}:{{basePort}}/games/252490",
-							"host": [
-								"{{baseURL}}"
-							],
-							"port": "{{basePort}}",
-							"path": [
-								"games",
-								"252490"
 							]
 						}
 					},
@@ -1812,12 +1736,12 @@
 	],
 	"variable": [
 		{
-			"id": "591bd2b1-bbf7-4d27-a585-a8191519d681",
+			"id": "02b35159-68f7-43b6-bc6d-35d687ba1812",
 			"key": "baseURL",
 			"value": "localhost"
 		},
 		{
-			"id": "1b5678fa-60c2-46df-9906-759c59d5de29",
+			"id": "c4ba5141-1ab0-4be1-b496-ac43ca41bcd3",
 			"key": "basePort",
 			"value": "8080"
 		}
