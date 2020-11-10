@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Build jar files') {
+        stage('Build') {
             steps {
                 container('maven') {
                     script {
@@ -16,6 +16,138 @@ pipeline {
                     }
                 } // container
             } // steps
+
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    archiveArtifacts 'target/*.jar'
+                }
+            } //post
+        } // stage
+        
+        stage('Tests') {
+            steps {
+                container('maven') {
+                    script {
+                       sh '''
+                            mvn test                  
+                            mvn surefire-report:report
+                            mvn test jacoco:report
+                       '''
+                    } //script
+                } //steps
+            } //stage
+            
+            post {
+                cleanup {
+                    junit 'target/surefire-reports/*.xml'
+                    script {
+                        publishHTML (target: [
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: 'target/site/jacoco', 
+                            reportFiles: 'index.html',
+                            reportName: "Jacoco report"
+                        ])
+                    } //script
+                } //cleanup
+            } //post
+        } //stage
+
+        stage('Postman') {
+            parallel {
+
+                stage('Postman - Start API') {
+                    steps {
+                        container('maven') {
+                            script {
+                                sh '''
+                                    mvn clean spring-boot:run &
+                                '''
+                            } //script
+                        } //container
+                    } //steps
+                } //stage
+
+                stage('Postman - Run') {
+                    steps {
+                        container('postman') {
+                            // dir ('src/test/java/com/iRecipeNew/iRecipeNew/postmanCollections') {
+                                script {    
+                                    sh """
+                                    npm install -g newman-reporter-html
+                                    sleep 20
+                                    ## Main
+                                    newman run resources/SteamAPI.postman_collection.json \
+                                        -e resources/SteamAPI.postman_collection.json --bail \
+                                        --reporters cli,html --reporter-html-export target/site/newman/categories-tests-report.html
+                                    """
+                                } //script
+                            // } //dir 
+                        } //container
+                    } //steps
+                    post {
+                        cleanup {
+                            script {
+                                publishHTML (target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'target/site/newman',
+                                    reportFiles: 'users-tests-report.html, recipes-tests-report.html, comments-tests-report.html, categories-tests-report.html',
+                                    reportName: "Integration Tests Report"
+                                ])
+                            } // script
+                        } //cleanup
+                    } //post
+                } //stage
+            } // parallel
+        } //stage
+
+        stage('JMeter') {
+            parallel {
+                stage('JMeter - Start API') {
+                    steps {
+                        container('maven') {
+                            script {
+                                sh '''
+                                    mvn clean spring-boot:run & 
+                                '''
+                            } //script
+                        } //container
+                    } //steps
+                } //stage
+                stage('JMeter - Run') {
+                    steps {
+                        container('jmeter') {
+                            dir ('resources/') {
+                                script {
+                                    sh '''
+                                        sleep 20
+                                        jmeter -n -Jjmeterengine.force.system.exit=true -t LeaderboardsAPI_Test_Plan.jmx -l load-test-results.jtl -e -o HTMLReport
+                                    '''
+                                } //script
+                            } //dir
+                        } //container
+                    } //steps
+                    post {
+                        cleanup {
+                            script {
+                                publishHTML (target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'resources/HTMLReport',
+                                    reportFiles: 'index.html',
+                                    reportName: "Jmeter report"
+                                ])
+                            } //script
+                        } //cleanup
+                    } //post
+                } //stage
+            } //parallel
         } // stage
 
     } // stages
