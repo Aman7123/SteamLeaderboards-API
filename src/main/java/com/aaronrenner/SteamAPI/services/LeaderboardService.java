@@ -18,7 +18,7 @@ public interface LeaderboardService {
 	 * WARNING: THIS METHOD CONTAINS A COMPLEX NETWORK OF MULTI-THREADED METHODS
 	 * 
 	 * Time Clocks (Before Rework) - {7.59s, 7.46s, 7.70s, 9.04s, 7.89s, 7.96s, 6.99s}
-	 * Time clocks (After MiltiThreading) - {2.21s, 2.25s, 4.65s, 2.28s, 1201ms, 2.31s}}
+	 * Time clocks (After MiltiThreading) - {2.21s, 2.25s, 4.65s, 2.28s, 1201ms, 2.31s}
 	 * 
 	 * @since 3.0
 	 * @param SteamID64 Any string, hopefully it is that of a user from the Steam system which also has friends in my system.

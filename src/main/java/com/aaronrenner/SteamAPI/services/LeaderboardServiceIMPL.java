@@ -20,8 +20,6 @@ import com.aaronrenner.SteamAPI.models.SteamUserStatInfo;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
 import com.aaronrenner.SteamAPI.repositories.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.*;
 import net.minidev.json.parser.*;
@@ -148,8 +146,9 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 
 		Optional<Game> gameInfo = searchGame(appID);
 		String gameName = "";
-
+		
 		for(FriendID fID : masterLoopList) {
+
 			SteamGameInfo newFriendData = getSteamPersonalGameProgressEndpoint(fID.getSteamID64(), appID);
 			// This code exists to populate the game name on api call always, regardless of what is returned by steam
 			if(gameInfo.isPresent()) {
@@ -190,7 +189,24 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 
 		return gameAchievements;
 	}
-
+	
+	
+	@Async
+	private  CompletableFuture<SteamUserStatInfo> completeSteamStats(String steamID64, String appID) {
+		SteamGameInfo newFriendData = getSteamPersonalGameProgressEndpoint(steamID64, appID);
+		
+		Optional<Game> gameInfo = searchGame(appID);
+		String gameName = "";
+		
+		// This code exists to populate the game name on api call always, regardless of what is returned by steam
+		if(gameInfo.isPresent()) {
+			gameName = gameInfo.get().getTitle();
+		} else {
+			gameName = newFriendData.getGameName();
+		}
+		SteamUserStatInfo newFriendStats = new SteamUserStatInfo(newFriendData.getSteamID(), gameName, newFriendData.getStats());
+		return CompletableFuture.completedFuture(newFriendStats);
+	}
 	/**
 	 * This method contains every processing piece to parse an ass load of data from Steam. 
 	 * Look at the other methods to get an idea for how much data this pulls together to deliver a result to the controller.
@@ -212,6 +228,8 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 	 */
 	@Async
 	private CompletableFuture<SteamProfile> completeSteamProfile(String playerData) throws InterruptedException {
+		final long start = System.currentTimeMillis();
+		
 		SteamProfile profile = null;
 		JSONObject recentGames = null;
 		JSONObject ownedGames = null;
@@ -229,8 +247,6 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		JSONObject bufferJSONObject = null;
 		String bufferString = null;
 		long bufferLong = 0;
-		
-		final long start = System.currentTimeMillis();
 
 		try {
 			profile = objectMapper.readValue(playerData, SteamProfile.class);

@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+    mysql:
+        container_name: mysql
+        expose:
+          - "3306"
+        image: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: Aman7123
+        volumes:
+          - "./resources/:/docker-entrypoint-initdb.d/"
+    steam-api:
+        container_name: steam-api
+        deploy:
+            restart_policy:
+              condition: on-failure
+              delay: 10s
+              max_attempts: 3
+        image: docker-public.kube.cloudapps.ms3-inc.com/aaron-renner-api:1.0
+        ports:
+            - "8080:8080"
+        depends_on:
+            - "mysql"

@@ -24,6 +24,12 @@ spec:
     image: justb4/jmeter
     tty: true 
     command: ['cat']
+  - name: mysql
+    image: mysql
+    tty: true
+    env:
+      - name: MYSQL_ROOT_PASSWORD
+        value: Aman7123
   volumes:
     - name: dind-storage
       emptyDir: {}

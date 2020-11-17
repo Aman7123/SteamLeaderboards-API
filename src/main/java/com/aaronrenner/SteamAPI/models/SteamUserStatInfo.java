@@ -14,7 +14,7 @@ public class SteamUserStatInfo {
 
 	private String SteamID64;
 	private String gameName;
-	private ArrayList<SteamStatLayout> stats = new ArrayList<>();;
+	private ArrayList<SteamStatLayout> stats = new ArrayList<>();
 
 	public SteamUserStatInfo(String SteamID64, String gameName, ArrayList<SteamStatLayout> stats) {
 		this.SteamID64 = SteamID64;

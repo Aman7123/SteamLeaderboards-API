@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.aaronrenner.SteamAPI.exceptions.BadRequestError;
 import com.aaronrenner.SteamAPI.exceptions.FriendExists;
 import com.aaronrenner.SteamAPI.exceptions.FriendNotFound;
-import com.aaronrenner.SteamAPI.exceptions.UserExists;
 import com.aaronrenner.SteamAPI.exceptions.UserNotFound;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;

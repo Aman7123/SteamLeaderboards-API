@@ -4,6 +4,12 @@ pipeline {
             yamlFile ('ci/agents/pods.yaml')
         }
     }
+    environment {
+        DB_USERNAME = "root"
+        DB_PASSWORD = "Aman7123"
+        API_KEY = "E7F6470D0BAFE99CED3362CB2DB5F25B"
+        TOKEN_KEY = "heismyrock"
+    }
 
     stages {
         stage('Build') {
@@ -25,67 +31,98 @@ pipeline {
                 }
             } //post
         } // stage
-        
-        stage('Tests') {
+
+        stage('Build and Upload Docker Image') {
             steps {
-                container('maven') {
+                container('docker') {
                     script {
-                       sh '''
-                            mvn test                  
-                            mvn surefire-report:report
-                            mvn test jacoco:report
-                       '''
+                        withCredentials([usernamePassword(
+                            credentialsId: 'docker-reg',
+                            usernameVariable: 'USERNAME',
+                            passwordVariable: 'PASSWORD',
+                        )]) {
+                            sh """
+                            docker login ${PUBLIC_DOCKER_REGISTRY} --username=${USERNAME} --password=${PASSWORD}
+                            docker build . -t ${PUBLIC_DOCKER_REGISTRY}/aaron-renner-api:1.0
+                            docker push ${PUBLIC_DOCKER_REGISTRY}/aaron-renner-api:1.0
+                            """
+                        }
                     } //script
-                } //steps
-            } //stage
-            
-            post {
-                cleanup {
-                    junit 'target/surefire-reports/*.xml'
-                    script {
-                        publishHTML (target: [
-                            allowMissing: true,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: true,
-                            reportDir: 'target/site/jacoco', 
-                            reportFiles: 'index.html',
-                            reportName: "Jacoco report"
-                        ])
-                    } //script
-                } //cleanup
-            } //post
+                } //container
+            } //steps 
         } //stage
-
-        stage('Postman') {
+        
+        stage('Testing Phase') {
             parallel {
+                stage('Start DB') {
+                    steps {
+                        container('mysql') {
+                            script {
+                                sh '''
+                                    mysql -uroot -pAman7123 < ./resources/SteamAPIDatabase.sql
+                                    mysql -uroot -pAman7123 -e"SHOW DATABASES"
+                                '''
+                            }
+                        } // container
+                    } // steps
+                } // stage
 
-                stage('Postman - Start API') {
+                stage('Start API') {
                     steps {
                         container('maven') {
                             script {
                                 sh '''
-                                    mvn clean spring-boot:run &
+                                    sleep 20     
+                                    mvn clean spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=jdbc:mysql://${HOSTNAME}:3306/SteamAPI --spring.datasource.username=${DB_USERNAME} --spring.datasource.password=${DB_PASSWORD} --com.aaronrenner.apikey=${API_KEY} --com.aaronrenner.tokenkey=${TOKEN_KEY}" &
                                 '''
                             } //script
                         } //container
                     } //steps
                 } //stage
 
+                stage('Unit Tests against DB') {
+                    steps {
+                        container('maven') {
+                            script {
+                            sh '''
+                                    sleep 20
+                                    mvn test -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
+                                    mvn surefire-report:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
+                                    mvn test jacoco:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
+                            '''
+                            } //script
+                        } //steps
+                    } //stage
+                    post {
+                        cleanup {
+                            junit 'target/surefire-reports/*.xml'
+                            script {
+                                publishHTML (target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'target/site/jacoco', 
+                                    reportFiles: 'index.html',
+                                    reportName: "Jacoco report"
+                                ])
+                            } //script
+                        } //cleanup
+                    } //post
+                } // stage
+
                 stage('Postman - Run') {
                     steps {
                         container('postman') {
-                            // dir ('src/test/java/com/iRecipeNew/iRecipeNew/postmanCollections') {
-                                script {    
-                                    sh """
-                                    npm install -g newman-reporter-html
-                                    sleep 20
-                                    ## Main
-                                    newman run resources/SteamAPI.postman_collection.json \
-                                        -e resources/SteamAPI.postman_collection.json --bail \
-                                        --reporters cli,html --reporter-html-export target/site/newman/categories-tests-report.html
-                                    """
-                                } //script
-                            // } //dir 
+                            script {    
+                                sh """
+                                npm install -g newman-reporter-html
+                                sleep 50
+                                ## Main
+                                newman run resources/SteamAPI.postman_collection.json \
+                                    -e resources/SteamAPI.postman_collection.json --bail \
+                                    --reporters cli,html --reporter-html-export target/site/newman/categories-tests-report.html
+                                """
+                            } //script
                         } //container
                     } //steps
                     post {
@@ -103,29 +140,14 @@ pipeline {
                         } //cleanup
                     } //post
                 } //stage
-            } // parallel
-        } //stage
 
-        stage('JMeter') {
-            parallel {
-                stage('JMeter - Start API') {
-                    steps {
-                        container('maven') {
-                            script {
-                                sh '''
-                                    mvn clean spring-boot:run & 
-                                '''
-                            } //script
-                        } //container
-                    } //steps
-                } //stage
                 stage('JMeter - Run') {
                     steps {
                         container('jmeter') {
                             dir ('resources/') {
                                 script {
                                     sh '''
-                                        sleep 20
+                                        sleep 50
                                         jmeter -n -Jjmeterengine.force.system.exit=true -t LeaderboardsAPI_Test_Plan.jmx -l load-test-results.jtl -e -o HTMLReport
                                     '''
                                 } //script
@@ -155,8 +177,8 @@ pipeline {
                         } //cleanup
                     } //post
                 } //stage
-            } //parallel
-        } // stage
+            }
+        }
 
     } // stages
 } // pipeline
