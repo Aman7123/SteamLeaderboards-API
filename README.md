@@ -58,4 +58,4 @@ mvn clean package
 ```
 
 ## CI/CD Integration
-
+The delivery of our application requires that we can pass it through a Jenkins pipeline to automate the building, testing and version release. Here at the company I work for we use Jenkins deployed on a Kuberneties service which can handle the containerization of the independent steps in our Jenkins. Under the [ci/agents](ci/agents) you will find the pods file which informs our Jenkins server which Docker images it will need to download, as well as the Jenkinsfile that contains our pipeline steps.
