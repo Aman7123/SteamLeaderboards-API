@@ -18,7 +18,7 @@ If any user does not contain a public Steam profile then the application will no
 ## Libraries
 ### Spring-Boot/Java
 * [Spring-Boot Maven](https://docs.spring.io/spring-boot/docs/2.3.2.RELEASE/maven-plugin/reference/html/)
-* [Lambok - Automated Class Method Generation](https://projectlombok.org/features/all) - [Maven](https://mvnrepository.com/artifact/org.projectlombok/lombok)
+* [Lombok - Automated Class Method Generation](https://projectlombok.org/features/all) - [Maven](https://mvnrepository.com/artifact/org.projectlombok/lombok)
 * [JSON Parser JAVADOC](https://javadoc.io/doc/net.minidev/json-smart/latest/index.html) - [Maven](https://mvnrepository.com/artifact/net.minidev/json-smart)
 ### JDBC
 * [MySQL Connector Maven](https://mvnrepository.com/artifact/mysql/mysql-connector-java)
