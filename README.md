@@ -41,9 +41,9 @@ No preliminary files or setup is required for the Database because Spring-Boot w
 ![Image of Database relation in typical ERD fashion](resources/images/SteamLeaderboards-ERD.png?raw=true)
 
 ## Running the Project
-Executing the project can be done in two ways, the first is by initilizing using Maven which the second produces a traditional Jar file.
+Executing the project can be done in two ways, the first is by initializing using Maven which the second produces a traditional Jar file.
 ### Maven
-If you have Maven installed on your machine you can navigate to the root project directory with this README file and execute the following. Remeber to follow the above Database setup procedures first.
+If you have Maven installed on your machine you can navigate to the root project directory with this README file and execute the following. Remember to follow the above Database setup procedures first.
 ```sh
 mvn clean spring-boot:run
 ```
