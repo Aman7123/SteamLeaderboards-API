@@ -10,6 +10,9 @@ pipeline {
         API_KEY = "E7F6470D0BAFE99CED3362CB2DB5F25B"
         TOKEN_KEY = "heismyrock"
     }
+    options {
+        parallelsAlwaysFailFast()
+    }
 
     stages {
         stage('Build') {
@@ -22,7 +25,6 @@ pipeline {
                     }
                 } // container
             } // steps
-
             post {
                 // If Maven was able to run the tests, even if some of the test
                 // failed, record the test results and archive the jar file.
@@ -30,69 +32,67 @@ pipeline {
                     archiveArtifacts 'target/*.jar'
                 }
             } //post
-        } // stage
+        } // build stage
 
-        stage('Build and Upload Docker Image') {
+        stage('Start Database') {
             steps {
-                container('docker') {
+                container('mysql') {
                     script {
-                        withCredentials([usernamePassword(
-                            credentialsId: 'docker-reg',
-                            usernameVariable: 'USERNAME',
-                            passwordVariable: 'PASSWORD',
-                        )]) {
-                            sh """
-                            docker login ${PUBLIC_DOCKER_REGISTRY} --username=${USERNAME} --password=${PASSWORD}
-                            docker build . -t ${PUBLIC_DOCKER_REGISTRY}/aaron-renner-api:1.0
-                            docker push ${PUBLIC_DOCKER_REGISTRY}/aaron-renner-api:1.0
-                            """
-                        }
+                        sh '''
+                            mysql -uroot -pAman7123 < ./resources/SteamAPIDatabase.sql
+                            ## mysql -uroot -pAman7123 -e"SHOW DATABASES"
+                        '''
+                    }
+                } // container
+            } // steps
+        } // start DB stage
+
+        stage('Start API') {
+            steps {
+                container('maven') {
+                    script {
+                        sh '''
+                            mvn spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=jdbc:mysql://${HOSTNAME}:3306/SteamAPI --spring.datasource.username=${DB_USERNAME} --spring.datasource.password=${DB_PASSWORD} --com.aaronrenner.apikey=${API_KEY} --com.aaronrenner.tokenkey=${TOKEN_KEY}" &
+                        '''
                     } //script
                 } //container
-            } //steps 
-        } //stage
+            } //steps
+        } // start API stage
         
-        stage('Testing Phase') {
+        stage('Run Tests:') {
             parallel {
-                stage('Start DB') {
+                stage('Upload Docker Image') {
                     steps {
-                        container('mysql') {
+                        container('docker') {
                             script {
-                                sh '''
-                                    mysql -uroot -pAman7123 < ./resources/SteamAPIDatabase.sql
-                                    mysql -uroot -pAman7123 -e"SHOW DATABASES"
-                                '''
-                            }
-                        } // container
-                    } // steps
-                } // stage
-
-                stage('Start API') {
-                    steps {
-                        container('maven') {
-                            script {
-                                sh '''
-                                    sleep 20     
-                                    mvn clean spring-boot:run -Dspring-boot.run.arguments="--spring.datasource.url=jdbc:mysql://${HOSTNAME}:3306/SteamAPI --spring.datasource.username=${DB_USERNAME} --spring.datasource.password=${DB_PASSWORD} --com.aaronrenner.apikey=${API_KEY} --com.aaronrenner.tokenkey=${TOKEN_KEY}" &
-                                '''
+                                withCredentials([usernamePassword(
+                                    credentialsId: 'docker-reg',
+                                    usernameVariable: 'USERNAME',
+                                    passwordVariable: 'PASSWORD',
+                                )]) {
+                                    sh """
+                                    docker login ${PUBLIC_DOCKER_REGISTRY} --username=${USERNAME} --password=${PASSWORD}
+                                    docker build . -t ${PUBLIC_DOCKER_REGISTRY}/aaron-renner-api:1.0
+                                    docker push ${PUBLIC_DOCKER_REGISTRY}/aaron-renner-api:1.0
+                                    """
+                                }
                             } //script
                         } //container
-                    } //steps
-                } //stage
+                    } //steps 
+                } // upload image stage
 
-                stage('Unit Tests against DB') {
+                stage('Java Unit Tests') {
                     steps {
                         container('maven') {
                             script {
                             sh '''
-                                    sleep 20
                                     mvn test -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
                                     mvn surefire-report:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
                                     mvn test jacoco:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
                             '''
                             } //script
-                        } //steps
-                    } //stage
+                        } //container
+                    } // steps
                     post {
                         cleanup {
                             junit 'target/surefire-reports/*.xml'
@@ -108,46 +108,13 @@ pipeline {
                             } //script
                         } //cleanup
                     } //post
-                } // stage
-
-                stage('Postman - Run') {
-                    steps {
-                        container('postman') {
-                            script {    
-                                sh """
-                                npm install -g newman-reporter-html
-                                sleep 50
-                                ## Main
-                                newman run resources/SteamAPI.postman_collection.json \
-                                    -e resources/SteamAPI.postman_collection.json --bail \
-                                    --reporters cli,html --reporter-html-export target/site/newman/categories-tests-report.html
-                                """
-                            } //script
-                        } //container
-                    } //steps
-                    post {
-                        cleanup {
-                            script {
-                                publishHTML (target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'target/site/newman',
-                                    reportFiles: 'users-tests-report.html, recipes-tests-report.html, comments-tests-report.html, categories-tests-report.html',
-                                    reportName: "Integration Tests Report"
-                                ])
-                            } // script
-                        } //cleanup
-                    } //post
-                } //stage
-
-                stage('JMeter - Run') {
+                } // unit test stage
+                stage('JMeter') {
                     steps {
                         container('jmeter') {
                             dir ('resources/') {
                                 script {
                                     sh '''
-                                        sleep 50
                                         jmeter -n -Jjmeterengine.force.system.exit=true -t LeaderboardsAPI_Test_Plan.jmx -l load-test-results.jtl -e -o HTMLReport
                                     '''
                                 } //script
@@ -176,9 +143,39 @@ pipeline {
                             } //script
                         } //cleanup
                     } //post
-                } //stage
-            }
-        }
-
+                } // jmeter stage
+                stage('Postman') {
+                    steps {
+                        container('postman') {
+                            script {    
+                                sh """
+                                npm install -g newman-reporter-html
+                                ## Main
+                                ## 30 seems to be the magic number
+                                sleep 30
+                                newman run resources/SteamAPI.postman_collection.json \
+                                    -e resources/SteamAPI.postman_collection.json --bail \
+                                    --reporters cli,html --reporter-html-export target/site/newman/categories-tests-report.html
+                                """
+                            } //script
+                        } //container
+                    } //steps
+                    post {
+                        cleanup {
+                            script {
+                                publishHTML (target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'target/site/newman',
+                                    reportFiles: 'users-tests-report.html, recipes-tests-report.html, comments-tests-report.html, categories-tests-report.html',
+                                    reportName: "Integration Tests Report"
+                                ])
+                            } // script
+                        } //cleanup
+                    } //post
+                } // postman stage
+            } // parallel
+        } // run test stage
     } // stages
 } // pipeline
