@@ -18,13 +18,77 @@ If any user does not contain a public Steam profile then the application will no
 ## Libraries
 ### Spring-Boot/Java
 * [Spring-Boot Maven](https://docs.spring.io/spring-boot/docs/2.3.2.RELEASE/maven-plugin/reference/html/)
+```pom
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+    <exclusions>
+        <exclusion>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+        <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+```
 * [Lombok - Automated Class Method Generation](https://projectlombok.org/features/all) - [Maven](https://mvnrepository.com/artifact/org.projectlombok/lombok)
+```pom
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <optional>true</optional>
+</dependency>
+```
 * [JSON Parser JAVADOC](https://javadoc.io/doc/net.minidev/json-smart/latest/index.html) - [Maven](https://mvnrepository.com/artifact/net.minidev/json-smart)
+```pom
+<dependency>
+    <groupId>net.minidev</groupId>
+    <artifactId>json-smart</artifactId>
+</dependency>
+```
 ### JDBC
 * [MySQL Connector Maven](https://mvnrepository.com/artifact/mysql/mysql-connector-java)
-* [Java Persistence Integration Maven](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa)
+```pom
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+* [Java Persistence API Maven](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa)
+```pom
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+```
 ### Security
 * [Java JSON Web Token (JWT) Github](https://jwt.io/) - [Maven](https://mvnrepository.com/artifact/com.auth0/java-jwt)
+```pom
+<dependency>
+    <groupId>com.auth0</groupId>
+    <artifactId>java-jwt</artifactId>
+    <!--You should check the 'Maven' hyperlink above for the most recent version-->
+    <version>3.3.0</version>
+</dependency>
+```
 
 ## Database Setup
 The Database setup is handled almost entirely by Spring-Boot, by this I mean that once you have created a new and blank Database called whatever you want and make sure it is either on the local machine(localhost) or available on a public address somewhere. To link the new Database to the program simply edit the following lines inside [src/main/resources/application.properties](src/main/resources/application.properties)
@@ -52,10 +116,23 @@ You can also use the built in Maven wrapper and execute the project by following
 ./mvnw clean spring-boot:run
 ```
 ### Building Jar File
-To generate a proper Jar file you can use the above Maven run commands which will generate a Jar under a folder "target/" from the root directory. This can be avoided and you can use the Maven wrapper like above or the Maven resources in the OS to build using following command.
+To generate a proper Jar file you can use the above Maven run commands which will generate a Jar under a folder "target/" from the root directory.
 ```sh
 mvn clean package
 ```
+```sh
+./mvnw clean package
+```
 
 ## CI/CD Integration
-The delivery of our application requires that we can pass it through a Jenkins pipeline to automate the building, testing and version release. Here at the company I work for we use Jenkins deployed on a Kuberneties service which can handle the containerization of the independent steps in our Jenkins. Under the [ci/agents](ci/agents) you will find the pods file which informs our Jenkins server which Docker images it will need to download, as well as the Jenkinsfile that contains our pipeline steps.
+The delivery of our application requires that we can pass it through a Jenkins pipeline to automate the building, testing and version release. Here at the company I work for we use Jenkins deployed on a Kuberneties service which can handle the containerization of the independent steps in our Jenkins. Under the [ci/agents](ci/agents) you will find the [ci/agents/pods.yaml](ci/agents/pods.yaml) file which informs our Jenkins server which Docker images it will need to download, as well as the Jenkinsfile that contains our pipeline steps.
+
+In this Pipeline you should replace these envireonment variables with those created above in this README
+```groovy
+environment {
+    DB_USERNAME = "ADMIN"
+    DB_PASSWORD = "PASSWORD"
+    API_KEY = "API_KEY"
+    TOKEN_KEY = "TOKEN_KEY"
+}
+```
