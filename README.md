@@ -57,7 +57,7 @@ mvn clean package
 ## CI/CD Integration
 The delivery of our application requires that we can pass it through a Jenkins pipeline to automate the building, testing and version release. To replicate this setup it will be important to have your Jenkins be allowed to create Docker containers from the pipeline. Under the [ci/agents](ci/agents) you will find the [ci/agents/pods.yaml](ci/agents/pods.yaml) file which informs our Jenkins server which Docker images it will need to download, as well as the Jenkinsfile that contains our pipeline steps.
 
-In this Pipeline you should replace these envireonment variables with those created above in this README
+In this Pipeline you should replace these environment variables with those created above in this README
 ```groovy
 environment {
     DB_USERNAME = "ADMIN"
@@ -77,7 +77,7 @@ environment {
 ### Steam Connection
 * [Obtaining an Steam Web API Key](https://steamcommunity.com/dev)
 
-Please make sure you have observed the section of code below from [src/main/java/com/aaronrenner/SteamAPI/services/LeaderboardServiceIMPL.java](src/main/java/com/aaronrenner/SteamAPI/services/LeaderboardService.java).
+Please make sure you have observed the section of code below from [src/main/java/com/aaronrenner/SteamAPI/services/LeaderboardServiceIMPL.java](src/main/java/com/aaronrenner/SteamAPI/services/LeaderboardServiceIMPL.java).
 ```java
 @Value("${com.aaronrenner.apikey}")
 private String apikey;
