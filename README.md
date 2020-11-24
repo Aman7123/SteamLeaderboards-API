@@ -5,7 +5,7 @@
   * [Database Setup](#Database-Setup)
   * [Run Spring-Boot](#Running-the-Project)
 * Workflow
-  * [Jenkins Pipeline](#CI/CD-Integration)
+  * [Jenkins Pipeline](#CICD-Integration)
 * Help
   * [Documentation Examples](#Links)
   * [Setup Libraries and Examples](#Libraries)
