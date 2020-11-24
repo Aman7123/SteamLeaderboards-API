@@ -13,17 +13,46 @@ info:
 
 # Documentation Categories
 tags:
+  - name: Login
+    description: Request a jwt token
   - name: Users Accounts
     description: Profile creation and self management
   - name: Leaderboards
     description: Steam profile data as a leaderboard
   - name: Games Search
     description: Search service for Steam games
-  - name: Login
-    description: Request a jwt token
 
   
 paths:
+  /login:
+    post:
+      tags:
+        - Login
+      summary: Get jwt token to login
+      operationId: getLogin
+      description: |
+        Login using username and password for a user
+        to access a jwt token for access to other endpoints
+      requestBody:
+        description: |
+          User to login
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /users:
     get:
       security:
@@ -407,35 +436,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /login:
-    post:
-      tags:
-        - Login
-      summary: Get jwt token to login
-      operationId: getLogin
-      description: |
-        Login using username and password for a user
-        to access a jwt token for access to other endpoints
-      requestBody:
-        description: |
-          User to login
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLogin'
-      responses:
-        '200':
-          description: Operation Successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Token'
-        '404':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
 components:
   ##
   securitySchemes:
@@ -476,7 +476,7 @@ components:
     # This is the layout for the appID
     appID:
       type: string
-      example: "289070"
+      example: "252490"
     # This is the layout for the return data for profiles in leaderboards
     SteamProfile:
       type: object
@@ -591,22 +591,6 @@ components:
               unlocktime:
                 type: number
                 example: 1594084227
-    # This is the return body for error logs
-    Logs:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 1
-        queryID:
-          type: number
-          example: 1
-        response_data:
-          type: string
-          example: "200"
-        time:
-          type: string
-          example: "1594084227"
 
   ###
   parameters:
@@ -639,7 +623,7 @@ components:
       description: Creation Successful
     # 400
     BadRequest:
-      description: Missing "username" and "password" in body
+      description: Missing "Username" and "Password" in body
     # 401
     Unauthorized:
       description: Missing JWT token, POST \"/users\" or \"/login\" first
