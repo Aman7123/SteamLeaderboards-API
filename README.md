@@ -5,10 +5,10 @@
   * [Database Setup](#Database-Setup)
   * [Run Spring-Boot](#Running-the-Project)
 * Workflow
-  * [Jenkins Pipeline](CI/CD-Integration)
+  * [Jenkins Pipeline](#CI/CD-Integration)
 * Help
   * [Documentation Examples](#Links)
-  * [Setup Libraries and Examples](#Guides)
+  * [Setup Libraries and Examples](#Libraries)
 
 ## Introduction
 This Java Program works through a framework called Spring-Boot which allows our application to intercept and respond to HTTP requests. This project was created as an introduction into the framework, you will find a full fleet of services with this project including; a user system, a game logging system, and the bulk of the API which is a leaderboard system. The purpose of our project is to provide a third-party data delivery service using data from Steam services, yes I'm referring to the Steam that PC gamers buy games through. Steam allows for users to create public profiles to connect with others and to flex how much of our lives they have waisted. My API will connect those public profiles of yourself and friends to show who really is the boss!
