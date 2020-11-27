@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.*;
+
+import com.aaronrenner.SteamAPI.exceptions.BadRequestError;
+import com.aaronrenner.SteamAPI.exceptions.ServerError;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.models.SteamProfile;
@@ -71,12 +74,23 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		List<SteamProfile> profile = new ArrayList<>();
 
 		String steamSearchURL = this.steamProfileEndpoint + "&steamids=" + SteamID64 + friendIDList;
-		JSONObject getRequest = getRequest(steamSearchURL);
-		JSONObject responseData = (JSONObject) getRequest.get("response");
-		JSONArray playerData = (JSONArray) responseData.get("players");
+		JSONArray playerData = null;
+		try {
+			JSONObject getRequest = getRequest(steamSearchURL);
+			JSONObject responseData = (JSONObject) getRequest.get("response");
+			// TODO fix null bug when API calls overloaded
+			playerData = (JSONArray) responseData.get("players");			
+		} catch (NullPointerException ex) {
+			LOGGER.error("Steam API Services returning an error, check the link below");
+			LOGGER.info(steamSearchURL);
+			throw new ServerError("Steam API Services are denying our requests");
+		}
+
 		int arraySize = playerData.size();
 
 		// Loop player search
+		JSONArray finalUserData = (JSONArray) playerData;
+		
 		for(int x=0; x<arraySize; x++) {
 			int iteratorNumber = x;
 			/**
@@ -87,10 +101,11 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 			 * 
 			 */
 			Thread newSteamProfile = new Thread(new Runnable() {
+				
 				@Override
 				public void run() {
 					try {
-						CompletableFuture<SteamProfile> newProfile = completeSteamProfile(playerData.get(iteratorNumber).toString());
+						CompletableFuture<SteamProfile> newProfile = completeSteamProfile(finalUserData.get(iteratorNumber).toString());
 						
 						while(true) {
 							if(newProfile.isDone()) {

@@ -1,3 +1,4 @@
+set global max_connections = 2000;
 CREATE DATABASE  IF NOT EXISTS `SteamAPI` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `SteamAPI`;
 -- MySQL dump 10.13  Distrib 8.0.22, for macos10.15 (x86_64)
