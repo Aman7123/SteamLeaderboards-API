@@ -13,9 +13,11 @@
 ## Introduction
 
 This Java Program works through a framework called Spring-Boot which allows our application to intercept and respond to HTTP requests. This project was created as an introduction into the framework, you will find a full fleet of services with this project including; a user system, a game logging system, and the bulk of the API which is a leaderboard system. The purpose of our project is to provide a third-party data delivery service using data from Steam services, yes I'm referring to the Steam that PC gamers buy games through. Steam allows for users to create public profiles to connect with others and to flex how much of our lives they have waisted. My API will connect those public profiles of yourself and friends to show who really is the boss!
+
 ### Users
 
 As mentioned above this API service requires its own user management system, it contains ways for users to create and manage their own identity on our service. A user profile will be needed to login through the RESTful interface to obtain JWT tokens to access protected data on the server, for example once a user registers themselves by POSTing the required account data they can modify their own friends at any time by accessing that resource through the API. Check documentation for more information.
+
 ### Leaderboards 
 
 The leaderboards that this API produces is hand-picked data from the Steam Public API for each profile which is formatted from one or more endpoint calls to the Steam services. The most important take-away from this endpoint is that it is PUBLIC you can use it without having an account all you must do is pass any SteamID into the URL request to get back the public information. If the SteamID that is passed into the service links to an account then a JSON array will be returned containing that users friends data.
