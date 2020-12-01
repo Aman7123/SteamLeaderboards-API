@@ -41,7 +41,7 @@ No preliminary files or setup is required for the Database because Spring-Boot w
 
 ### Running the Project
 
-Executing the project can be done in two ways, the first is by initializing using Maven which the second produces a traditional Jar file.
+Executing the project can be done in two ways, the first is by initializing using Maven which the second produces a traditional Jar file. Before attempting to run the program some setup must be done inside of the [src/main/resources/application.properties](src/main/resources/application.properties), you can follow the guides [Database Setup](#Database-Setup), [Steam API Key](#Steam-Connection) and [Security Setup](#Security).
 
 ### Build with Maven
 
@@ -67,7 +67,7 @@ mvn -B -DskipTests clean package
 
 ### Creating a Docker Image
 
-To build a container that can execute the application from a safe location you can use my supplied [Dockerfile](Dockerfile) to do so. You should follow the [Database Setup](#Database-Setup) and [Project Security](#Security) guide first to better understand some of these arguments.
+To build a container that can execute the application from a safe location you can use my supplied [Dockerfile](Dockerfile) to do so. You should follow the [Database Setup](#Database-Setup), [Steam API Key](#Steam-Connection) and [Project Security](#Security) guide first to better understand some of these arguments.
 
 ```Dockerfile
 CMD [ "java", \

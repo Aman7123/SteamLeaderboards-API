@@ -11,4 +11,11 @@ COPY target/*.jar SteamLeaderboards-API.jar
 EXPOSE 8080
 
 # Run the specified command within the container.
-CMD [ "java", "-jar", "SteamLeaderboards-API.jar", "--spring.datasource.url=jdbc:mysql://mysql:3306/SteamAPI", "--spring.datasource.username=root", "--spring.datasource.password=Aman7123", "--com.aaronrenner.apikey=E7F6470D0BAFE99CED3362CB2DB5F25B", "--com.aaronrenner.tokenkey=heismyrock"]
+CMD [ "java", \
+        "-jar", \
+        "SteamLeaderboards-API.jar", \
+        "--spring.datasource.url=jdbc:mysql://{URL-ADDRESS}:{PORT}/{DATABASE-NAME}", \
+        "--spring.datasource.username=ADMIN", \
+        "--spring.datasource.password=PASSWORD", \
+        "--com.aaronrenner.apikey=API_KEY_SECRET", \
+        "--com.aaronrenner.tokenkey=TOKEN_KEY_SECRET"]
