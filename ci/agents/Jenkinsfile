@@ -86,9 +86,9 @@ pipeline {
                         container('maven') {
                             script {
                             sh '''
-                                    mvn test -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
-                                    mvn surefire-report:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
-                                    mvn test jacoco:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY}
+                                    mvn test -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY} -Dspring.datasource.hikari.maximumPoolSize=100
+                                    mvn surefire-report:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY} -Dspring.datasource.hikari.maximumPoolSize=100
+                                    mvn test jacoco:report -Dspring.datasource.url="jdbc:mysql://${HOSTNAME}:3306/SteamAPI" -Dspring.datasource.username=${DB_USERNAME} -Dspring.datasource.password=${DB_PASSWORD} -Dcom.aaronrenner.apikey=${API_KEY} -Dcom.aaronrenner.tokenkey=${TOKEN_KEY} -Dspring.datasource.hikari.maximumPoolSize=100
                             '''
                             } //script
                         } //container
