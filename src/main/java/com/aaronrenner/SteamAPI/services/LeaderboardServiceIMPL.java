@@ -205,7 +205,7 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		return gameAchievements;
 	}
 	
-	
+	/**
 	@Async
 	private  CompletableFuture<SteamUserStatInfo> completeSteamStats(String steamID64, String appID) {
 		SteamGameInfo newFriendData = getSteamPersonalGameProgressEndpoint(steamID64, appID);
@@ -222,6 +222,8 @@ public class LeaderboardServiceIMPL implements LeaderboardService {
 		SteamUserStatInfo newFriendStats = new SteamUserStatInfo(newFriendData.getSteamID(), gameName, newFriendData.getStats());
 		return CompletableFuture.completedFuture(newFriendStats);
 	}
+	*/
+	
 	/**
 	 * This method contains every processing piece to parse an ass load of data from Steam. 
 	 * Look at the other methods to get an idea for how much data this pulls together to deliver a result to the controller.
