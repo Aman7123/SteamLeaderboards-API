@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UserControllerTest {
 	
 	private String adminToken = "Bearer " + new TokenTest().getToken();
+	private String userToken = "Bearer " + new TokenTest().getToken_user();
+	private String fakeToken = "PoopFace " + new TokenTest().getToken_user();
 	ObjectMapper om = new ObjectMapper();
 	
 	@Autowired
@@ -81,6 +83,14 @@ public class UserControllerTest {
 		
 		assert(200 == mvcResult.getResponse().getStatus());
 		assert(realUserList.length > 0);
+		
+		// For Error
+		MvcResult mvcResult_Error = mockMvc.perform(MockMvcRequestBuilders.get("/users").header("Authorization", userToken)).andReturn();
+		assert(401 == mvcResult_Error.getResponse().getStatus());
+		
+		// For Error Bad Token
+		MvcResult mvcResult_Error_Token = mockMvc.perform(MockMvcRequestBuilders.get("/users").header("Authorization", fakeToken)).andReturn();
+		assert(401 == mvcResult_Error_Token.getResponse().getStatus());
 	}
 	
 	@Test
@@ -91,6 +101,9 @@ public class UserControllerTest {
 		assert(200 == mvcResult.getResponse().getStatus());
 		assert(Integer.valueOf(realUser.getSteamID64()) == Integer.valueOf(fakeUser.getSteamID64()));
 		
+		// For Error
+		MvcResult mvcResult_Error = mockMvc.perform(MockMvcRequestBuilders.get("/users/007").header("Authorization", userToken)).andReturn();	
+		assert(401 == mvcResult_Error.getResponse().getStatus());
 	}
 	
 	@Test
@@ -99,6 +112,10 @@ public class UserControllerTest {
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch("/users/003").header("Authorization", adminToken).contentType(MediaType.APPLICATION_JSON).content(updatedUser_AsJSON).accept(MediaType.APPLICATION_JSON)).andReturn();
 		
 		assert(202 == mvcResult.getResponse().getStatus());
+		
+		// For Error
+		MvcResult mvcResult_Error = mockMvc.perform(MockMvcRequestBuilders.patch("/users/007").header("Authorization", userToken).contentType(MediaType.APPLICATION_JSON).content(updatedUser_AsJSON)).andReturn();	
+		assert(401 == mvcResult_Error.getResponse().getStatus());
 	}
 	
 	@Test
@@ -116,24 +133,40 @@ public class UserControllerTest {
 		
 		assert(200 == mvcResult.getResponse().getStatus());
 		assert(realFriendList.length > 0);
+		
+		//For Error
+		MvcResult mvcResult_Error = mockMvc.perform(MockMvcRequestBuilders.get("/users/007/friends-list").header("Authorization", userToken)).andReturn();
+		assert(401 == mvcResult_Error.getResponse().getStatus());
 	}
 	
 	@Test
 	public void addFriend() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/users/007/friends-list/007").header("Authorization", adminToken)).andReturn();
 		assert(201 == mvcResult.getResponse().getStatus());
+		
+		// For Error
+		MvcResult mvcResult_Error = mockMvc.perform(MockMvcRequestBuilders.post("/users/007/friends-list/007").header("Authorization", userToken)).andReturn();
+		assert(401 == mvcResult_Error.getResponse().getStatus());
 	}
 	
 	// TODO more in-depth delete
 	@Test
 	public void deleteUser() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567").header("Authorization", adminToken)).andDo(MockMvcResultHandlers.print()).andReturn();
+		
+		// For Error
+		MvcResult mvcResult_Error = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567").header("Authorization", userToken)).andReturn();
+
 	}
 	
 	// TODO more in-depth delete
 	@Test
 	public void deleteFriend() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567/friends-list/12345678901234567").header("Authorization", adminToken)).andDo(MockMvcResultHandlers.print()).andReturn();
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567/friends-list/12345678901234567").header("Authorization", adminToken)).andReturn();
+		
+		// For Error
+		MvcResult mvcResult_Error = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567/friends-list/12345678901234567").header("Authorization", userToken)).andReturn();
+		MvcResult mvcResult_Error2 = mockMvc.perform(MockMvcRequestBuilders.delete("/users/12345678901234567/friends-list/12345678901234567")).andReturn();
 	}
 	
 	@Test

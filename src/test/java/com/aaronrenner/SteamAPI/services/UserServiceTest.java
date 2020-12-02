@@ -1,12 +1,17 @@
 package com.aaronrenner.SteamAPI.services;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.aaronrenner.SteamAPI.exceptions.BadRequestError;
+import com.aaronrenner.SteamAPI.exceptions.UserNotFound;
 import com.aaronrenner.SteamAPI.models.FriendID;
 import com.aaronrenner.SteamAPI.models.User;
 import com.aaronrenner.SteamAPI.repositories.FriendRepository;
@@ -79,9 +84,14 @@ public class UserServiceTest {
 	
 	@Test
 	public void createUser_Success() {
+		User test_return = new User();
+		test_return.setUsername("foo_foo");
+		test_return.setPassword("1234");
+		test_return.setSteamID64("1");
 		// We must pretend the use is not in DB
 		Mockito.when(userRepository.findBySteamID64(Mockito.anyString())).thenReturn(Optional.empty());
 		Mockito.when(userRepository.findByUsername(Mockito.anyString())).thenReturn(Optional.empty());
+		Mockito.when(userRepository.findByUsername("foo_foo")).thenReturn(Optional.of(test_return));
 		
 		
 		User realUser = userService.createUser(fakeUser);
@@ -90,6 +100,28 @@ public class UserServiceTest {
 		
 		assert(realUser.getSteamID64() == fakeUser.getSteamID64());
 		assert(userCountBefore < fakeUserList.size());
+		
+		// Test Errors
+		assertThrows(BadRequestError.class, () -> {
+			User test = new User();
+			test.setUsername("foo_foo");
+			test.setPassword("1234");
+			test.setSteamID64("1");
+			User create_Return = userService.createUser(test);
+		});
+		
+		assertThrows(BadRequestError.class, () -> {
+			User test = new User();
+			User create_Return = userService.createUser(test);
+		});
+		
+		assertThrows(BadRequestError.class, () -> {
+			User test = new User();
+			test.setUsername("test_test");
+			test.setPassword("1234");
+			test.setSteamID64("1");
+			User create_Return = userService.createUser(test);
+		});
 	}
 	
 	@Test
@@ -101,8 +133,30 @@ public class UserServiceTest {
 		//Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(fakeUser_updated);
 		
 		fakeUser_updated = userService.updateUser(fakeUser_updated.getSteamID64(), fakeUser_updated);
+		
+		Mockito.when(userRepository.existsByUsername("test_test")).thenReturn(false);
 
 		assert(fakeUser.getUsername() != fakeUser_updated.getUsername());
+		
+		// For Errors
+		assertThrows(BadRequestError.class, () -> {
+			User test = new User();
+			User create_Return = userService.updateUser("foo", null);
+		});
+		
+		assertThrows(BadRequestError.class, () -> {
+			User test = new User();
+			test.setUsername("test_test");
+			test.setPassword("12");
+			User create_Return = userService.updateUser("foo", test);
+		});
+		
+		assertThrows(BadRequestError.class, () -> {
+			User test = new User();
+			test.setUsername("test_test");
+			test.setSteamID64("12");
+			User create_Return = userService.updateUser("foo", test);
+		});
 	}
 	
 	@Test
@@ -119,6 +173,16 @@ public class UserServiceTest {
 		
 		assertNotNull(realFriend);
 		assert(realFriend.getSteamID64() == fakeFriend.getSteamID64());
+	}
+	
+	@Test
+	public void deleteUser_Executed() {
+		userService.deleteUser("12345678901234567");
+	}
+	
+	@Test
+	public void deleteFriend_Executed() {
+		userService.deleteFriend("anything", "12345678901234567");
 	}
 
 	// TODO create delete test

@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GameControllerTest {
 	
 	private String adminToken = "Bearer " + new TokenTest().getToken();
+	private String userToken = "Bearer " + new TokenTest().getToken_user();
+	
 	ObjectMapper om = new ObjectMapper();
 	
 	@Autowired
@@ -97,22 +99,28 @@ public class GameControllerTest {
 	@Test
 	public void updateGame() throws Exception {
 		String updatedGame_AsJSON = om.writeValueAsString(fakeGame);
-		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch("/games/3").header("Authorization", adminToken).contentType(MediaType.APPLICATION_JSON).content(updatedGame_AsJSON).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isAccepted()).andReturn();
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch("/games/3").header("Authorization", adminToken).contentType(MediaType.APPLICATION_JSON).content(updatedGame_AsJSON).accept(MediaType.APPLICATION_JSON)).andReturn();
 		
 		assert(202 == mvcResult.getResponse().getStatus());
+		
+		// For Error
+		MvcResult mvcResult_Error_NoToken = mockMvc.perform(MockMvcRequestBuilders.patch("/games/3").contentType(MediaType.APPLICATION_JSON).content(updatedGame_AsJSON).accept(MediaType.APPLICATION_JSON)).andReturn();
+		assert(401 == mvcResult_Error_NoToken.getResponse().getStatus());
+		MvcResult mvcResult_Error_NoPermission = mockMvc.perform(MockMvcRequestBuilders.patch("/games/3").header("Authorization", userToken).contentType(MediaType.APPLICATION_JSON).content(updatedGame_AsJSON).accept(MediaType.APPLICATION_JSON)).andReturn();
+		assert(401 == mvcResult_Error_NoPermission.getResponse().getStatus());
 	}
 	
 	@Test
 	public void addGame() throws Exception {
 		String game_AsJSON = om.writeValueAsString(fakeGame);
 		
-		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/games").header("Authorization", adminToken).contentType(MediaType.APPLICATION_JSON).content(game_AsJSON).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/games").header("Authorization", adminToken).contentType(MediaType.APPLICATION_JSON).content(game_AsJSON).accept(MediaType.APPLICATION_JSON)).andReturn();
 		assert(201 == mvcResult.getResponse().getStatus());
 	}
 	
 	@Test
 	public void deleteGame() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/games/03").header("Authorization", adminToken)).andDo(MockMvcResultHandlers.print()).andReturn();
+		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/games/03").header("Authorization", adminToken)).andReturn();
 
 	}
 	

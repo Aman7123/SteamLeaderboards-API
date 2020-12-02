@@ -43,9 +43,6 @@ public class UserController {
 	@PostMapping(BASEURL)
 	@ResponseStatus(value= HttpStatus.CREATED)
 	public void createUser(@RequestBody Optional<User> newUser) {
-		if(newUser.isEmpty()) {
-			throw new BadRequestError("Missing JSON with \"username\", \"steamID64\" and \"password\"");
-		}
 		this.userService.createUser(newUser.get());
 	}
 

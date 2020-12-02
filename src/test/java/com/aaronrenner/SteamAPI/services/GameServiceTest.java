@@ -1,12 +1,16 @@
 package com.aaronrenner.SteamAPI.services;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.aaronrenner.SteamAPI.exceptions.GameNotFound;
 import com.aaronrenner.SteamAPI.models.Game;
 import com.aaronrenner.SteamAPI.repositories.GameRepository;
 
@@ -88,6 +92,16 @@ public class GameServiceTest {
 		fakeGame_updated = gameService.updateGame(fakeGame_updated.getId(), fakeGame_updated);
 		
 		assert(fakeGame_updated.getTitle() != fakeGame.getTitle());
+	}
+	
+	@Test
+	public void deleteGame_Executed() {
+		Mockito.when(gameRepository.findById((long) 100)).thenReturn(Optional.empty());
+		gameService.deleteGame(110);
+		// For Error
+		assertThrows(GameNotFound.class, () -> {
+			gameService.deleteGame(100);
+		});
 	}
 	
 	private List<Game> fakeGameList() {
