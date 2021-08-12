@@ -1,3 +1,5 @@
+[![BUILDER](https://github.com/Aman7123/SteamLeaderboards-API/actions/workflows/BUILDER.yml/badge.svg?branch=master)](https://github.com/Aman7123/SteamLeaderboards-API/actions/workflows/BUILDER.yml)
+
 # SteamLeaderboards-API
 ### Table of Contents
 * [Introduction](#Introduction)
